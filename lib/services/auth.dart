@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:ept_frontend/firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ept_frontend/models/usuario.dart';
 import 'package:firebase_for_all/firebase_for_all.dart';
@@ -5,6 +7,8 @@ import 'package:firebase_for_all/firebase_for_all.dart';
 class AuthService
 {
   final FirebaseAuth _auth = FirebaseAuthForAll.instance; //Define la instancia de autenticacion para firebase
+  final FirestoreItem _db = FirestoreForAll.instance; //Inicializo instancia de firestore
+  final StorageRef _storageRef = FirebaseStorageForAll.instance.ref(DefaultStorageOption.rootfolder);
 
   //Metodo para obtener el usuario personalizado mediante la escucha de un stream
   Stream<Usuario?> get usuario
@@ -45,6 +49,42 @@ class AuthService
   Future<void> logout() async
   {
       await _auth.signOut(); //Tiramos la reques de logout y esperamos que responda
+  }
+
+
+  //Crear Usuario
+  Future<bool> createUser(String email, String password, UserRoles rol, String nombre, File? foto) async
+  {
+    User? nuevoUsuario = null;
+    String uploadedFoto = '';
+    Map<String,String> userdata;
+
+    try {
+      UserCredential credencial = await _auth.createUserWithEmailAndPassword(
+          email: email, password: password);
+      nuevoUsuario = credencial.user;
+    }
+    catch (e){
+      nuevoUsuario = null;
+    }
+
+    if (nuevoUsuario == null)
+      {
+        return false;
+      }
+    else{
+      if (foto != null)
+        {
+          StorageRef fotoRef = _storageRef.child("usersdata").child(nuevoUsuario.uid).child("profileimage.jpg");
+          UploadTaskForAll uploadTaskForAll = fotoRef.putFile(foto);
+          uploadedFoto = await fotoRef.getDownloadURL();
+        }
+
+      userdata = {'foto':uploadedFoto,'nombre':nombre,'rol':rol.toString()};
+      await _db.collection("usuarios").doc(nuevoUsuario.uid).set(userdata);
+      return true;
+    }
+
   }
 
 }
