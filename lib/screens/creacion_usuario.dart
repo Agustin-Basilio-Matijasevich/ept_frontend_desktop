@@ -119,11 +119,12 @@ class FormularioState extends State<Formulario> {
             ),
           ),
           _gap(),
+          // Nombre
           TextFormField(
             validator: (String? value) {
               if (value != null) {
                 setState(() {
-                  email = value;
+                  nombre = value;
                 });
               } else {
                 return 'El nombre no puede estar vacío';
@@ -136,7 +137,7 @@ class FormularioState extends State<Formulario> {
             decoration: const InputDecoration(
               labelText: 'Nombre',
               hintText: 'Ingrese un nombre',
-              prefixIcon: Icon(Icons.email),
+              prefixIcon: Icon(Icons.person),
               border: OutlineInputBorder(),
             ),
           ),
@@ -204,10 +205,11 @@ class FormularioState extends State<Formulario> {
                           content: const Text("Usuario creado con éxito"),
                           actions: [
                             TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text("Aceptar"))
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text("Aceptar"),
+                            ),
                           ],
                         );
                       },

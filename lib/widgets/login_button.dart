@@ -30,11 +30,16 @@ class LoginButton extends StatelessWidget {
         },
       );
     } else {
+      print(user.foto);
       return TextButton.icon(
         style: const ButtonStyle(
           foregroundColor: MaterialStatePropertyAll(Colors.white),
         ),
-        icon: const Icon(Icons.person),
+        icon: Image.network(
+          user.foto,
+          width: 32,
+          height: 32,
+        ),
         label: Text(
           'Hola, ${user.nombre}',
           style: const TextStyle(fontSize: 18),

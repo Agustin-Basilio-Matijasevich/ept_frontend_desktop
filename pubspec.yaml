@@ -89,6 +89,8 @@ flutter:
     - assets/images/niveles/secundario01.jpg
     - assets/images/niveles/secundario02.jpg
     - assets/images/niveles/secundario03.jpg
+    - assets/images/defaultProfilePhoto.png
+    - assets/images/defaultProfilePhoto32.png
 
     #Gifs
     - assets/gifs/robotTyping.gif
