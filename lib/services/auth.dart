@@ -84,6 +84,7 @@ class AuthService
     {
       await nuevoUsuario.delete();
       print("Error cargando datos de usuario a Firebase");
+      print("Nombre: $nombre, Rol: $rol");
       print("Exepcion: $e");
       return false;
     }
