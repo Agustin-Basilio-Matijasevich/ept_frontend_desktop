@@ -61,3 +61,7 @@ class DefaultFirebaseOptions {
     storageBucket: 'ept-qa-51bf5.appspot.com',
   );
 }
+
+class DefaultStorageOption{
+  static const String rootfolder = "gs://ept-qa-51bf5.appspot.com";
+}
