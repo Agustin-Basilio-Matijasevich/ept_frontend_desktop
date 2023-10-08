@@ -9,6 +9,7 @@ import '../models/usuario.dart';
 import 'alumnos.dart';
 import 'aulas.dart';
 import 'boletin.dart';
+import 'creacion_usuario.dart';
 import 'deudores.dart';
 import 'notas.dart';
 
@@ -147,14 +148,7 @@ class Welcome extends StatelessWidget {
           Seccion(context, 'Pago de cuotas', PagoCuotas(), Icons.receipt),
           Seccion(context, 'Horarios', Horarios(), Icons.watch_later_outlined),
           Seccion(context, 'Boletin', Boletin(), Icons.grade),
-          Seccion(context, 'DEUDORES TEST', Deudores(), Icons.abc),
         ];
-      // return [
-      //   header,
-      //   Seccion(context, 'Pago de cuotas', PagoCuotas(), Icons.receipt),
-      //   Seccion(context, 'Horarios', Horarios(), Icons.watch_later_outlined),
-      //   Seccion(context, 'Boletin', Boletin(), Icons.grade),
-      // ];
       case UserRoles.nodocente:
         return [
           header,
@@ -162,6 +156,8 @@ class Welcome extends StatelessWidget {
           Seccion(context, 'Alumnos', Alumnos(), Icons.school),
           Seccion(context, 'Horarios', Horarios(), Icons.watch_later_outlined),
           Seccion(context, 'Asignación de aulas', Aulas(), Icons.room),
+          Seccion(context, 'Creación de Usuarios', CreacionUsuario(),
+              Icons.people_outline_sharp)
         ];
       default:
         return [
