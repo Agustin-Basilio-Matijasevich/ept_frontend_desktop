@@ -1,15 +1,24 @@
+import 'package:ept_frontend/screens/horarios.dart';
+import 'package:ept_frontend/screens/pago_cuotas.dart';
 import 'package:ept_frontend/widgets/footer.dart';
 import 'package:ept_frontend/widgets/login_button.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../models/usuario.dart';
+import 'alumnos.dart';
+import 'aulas.dart';
+import 'boletin.dart';
+import 'deudores.dart';
+import 'notas.dart';
 
 class Welcome extends StatelessWidget {
   Welcome({super.key});
 
-  List<String> images = [];
-
   @override
   Widget build(BuildContext context) {
     bool esPantallaChica = MediaQuery.of(context).size.width < 600;
+    final usuario = Provider.of<Usuario?>(context);
 
     Widget _gap() => SizedBox(
           width: MediaQuery.of(context).size.width,
@@ -33,20 +42,7 @@ class Welcome extends StatelessWidget {
       ),
       drawer: Drawer(
         child: ListView(
-          children: <Widget>[
-            const DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
-              child: Text(
-                'Secciones',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
-              ),
-            ),
-          ],
+          children: SeccionesAccesibles(context, usuario!),
         ),
       ),
       body: LayoutBuilder(
@@ -99,9 +95,12 @@ class Welcome extends StatelessWidget {
                     height: MediaQuery.of(context).size.height,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: const <Widget>[
-                        _Logo(),
-                        _CompanyDescription(),
+                      children: <Widget>[
+                        const _Logo(),
+                        Container(
+                          width: MediaQuery.of(context).size.width - 700,
+                          child: const _CompanyDescription(),
+                        ),
                       ],
                     ),
                   ),
@@ -114,6 +113,78 @@ class Welcome extends StatelessWidget {
       ),
     );
   }
+
+  List<Widget> SeccionesAccesibles(BuildContext context, Usuario usuario) {
+    const header = DrawerHeader(
+      decoration: BoxDecoration(
+        color: Colors.blue,
+      ),
+      child: Text(
+        'Secciones',
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 24,
+        ),
+      ),
+    );
+    switch (usuario.rol) {
+      case UserRoles.docente:
+        return [
+          header,
+          Seccion(context, 'Lista de alumnos', Alumnos(), Icons.list),
+          Seccion(context, 'Horarios', Horarios(), Icons.watch_later_outlined),
+          Seccion(context, 'Carga de notas', Notas(), Icons.grade),
+        ];
+      case UserRoles.estudiante:
+        return [
+          header,
+          Seccion(context, 'Horarios', Horarios(), Icons.watch_later_outlined),
+          Seccion(context, 'Boletin', Boletin(), Icons.grade),
+        ];
+      case UserRoles.padre:
+        return [
+          header,
+          Seccion(context, 'Pago de cuotas', PagoCuotas(), Icons.receipt),
+          Seccion(context, 'Horarios', Horarios(), Icons.watch_later_outlined),
+          Seccion(context, 'Boletin', Boletin(), Icons.grade),
+          Seccion(context, 'DEUDORES TEST', Deudores(), Icons.abc),
+        ];
+      // return [
+      //   header,
+      //   Seccion(context, 'Pago de cuotas', PagoCuotas(), Icons.receipt),
+      //   Seccion(context, 'Horarios', Horarios(), Icons.watch_later_outlined),
+      //   Seccion(context, 'Boletin', Boletin(), Icons.grade),
+      // ];
+      case UserRoles.nodocente:
+        return [
+          header,
+          Seccion(context, 'Deudores', Deudores(), Icons.money_off),
+          Seccion(context, 'Alumnos', Alumnos(), Icons.school),
+          Seccion(context, 'Horarios', Horarios(), Icons.watch_later_outlined),
+          Seccion(context, 'Asignación de aulas', Aulas(), Icons.room),
+        ];
+      default:
+        return [
+          header,
+        ];
+    }
+  }
+
+  ListTile Seccion(BuildContext context, String nombre,
+      StatelessWidget pantalla, IconData icono) {
+    return ListTile(
+      leading: Icon(icono),
+      title: Text(nombre),
+      onTap: () => {
+        Navigator.push<void>(
+          context,
+          MaterialPageRoute<void>(
+            builder: (BuildContext context) => pantalla,
+          ),
+        ),
+      },
+    );
+  }
 }
 
 class _CompanyDescription extends StatelessWidget {
@@ -124,30 +195,31 @@ class _CompanyDescription extends StatelessWidget {
     bool esPantallaChica = MediaQuery.of(context).size.width < 600;
 
     return Text(
-        'Inspiramos, desafiamos y empoderamos a todos\n'
-        'nuestros alumnos a ser miembros comprometidos\n'
-        'y éticos de una comunidad global, para que se\n'
-        'conviertan en agentes de cambio conscientes de\n '
-        'sí mismos,seguros, innovadores y colaborativos.',
-        softWrap: true,
-        style: esPantallaChica
-            ? const TextStyle(
-                //fontFamily:
-                color: Color(0xFF0c245e),
-                fontSize: 30,
-                //fontStyle: FontStyle.italic,
-                fontWeight: FontWeight.bold,
-                fontStyle: FontStyle.italic,
-              )
-            : const TextStyle(
-                //fontFamily:
-                color: Color(0xFF0c245e),
-                fontSize: 42,
-                //fontStyle: FontStyle.italic,
-                fontWeight: FontWeight.bold,
-                fontStyle: FontStyle.italic,
-              ),
-        textAlign: esPantallaChica ? TextAlign.center : null);
+      'Inspiramos, desafiamos y empoderamos a todos '
+      'nuestros alumnos a ser miembros comprometidos '
+      'y éticos de una comunidad global, para que se '
+      'conviertan en agentes de cambio conscientes de '
+      'sí mismos,seguros, innovadores y colaborativos.',
+      softWrap: true,
+      style: esPantallaChica
+          ? const TextStyle(
+              //fontFamily:
+              color: Color(0xFF0c245e),
+              fontSize: 30,
+              //fontStyle: FontStyle.italic,
+              fontWeight: FontWeight.bold,
+              fontStyle: FontStyle.italic,
+            )
+          : const TextStyle(
+              //fontFamily:
+              color: Color(0xFF0c245e),
+              fontSize: 32,
+              //fontStyle: FontStyle.italic,
+              fontWeight: FontWeight.bold,
+              fontStyle: FontStyle.italic,
+            ),
+      textAlign: esPantallaChica ? TextAlign.center : TextAlign.left,
+    );
   }
 }
 

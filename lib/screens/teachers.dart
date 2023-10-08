@@ -1,16 +1,16 @@
 import 'package:ept_frontend/main.dart';
 import 'package:flutter/material.dart';
-import 'package:ept_frontend/screens/cuotas.dart';
+import 'package:ept_frontend/screens/pago_cuotas.dart';
 import 'package:ept_frontend/screens/alumnos.dart';
 import 'package:ept_frontend/screens/horarios.dart';
 import 'package:ept_frontend/screens/aulas.dart';
 import 'package:flutter/rendering.dart';
 
-class Staff extends StatelessWidget{
+class Staff extends StatelessWidget {
   Staff({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -25,10 +25,11 @@ class Staff extends StatelessWidget{
               decoration: BoxDecoration(
                 color: Colors.blue,
               ),
-            child: Text('Funciones',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 24,
+              child: Text(
+                'Funciones',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
                 ),
               ),
             ),
@@ -83,43 +84,42 @@ class Staff extends StatelessWidget{
           ],
         ),
       ),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          return SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: Column(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: Image.asset("assets/images/backgroundWhiteBlur.jpeg").image,
-                      fit: BoxFit.cover,
-                      alignment: AlignmentDirectional.bottomCenter,
-                    ),
+      body: LayoutBuilder(builder: (context, constraints) {
+        return SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Column(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: Image.asset("assets/images/backgroundWhiteBlur.jpeg")
+                        .image,
+                    fit: BoxFit.cover,
+                    alignment: AlignmentDirectional.bottomCenter,
                   ),
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Center(
-                        child: Image.asset("assets/images/logo.png"),
-                      ),
-                       const Text("Bienvenido/a al perfil de Docente",
-                        style: TextStyle(
+                ),
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Center(
+                      child: Image.asset("assets/images/logo.png"),
+                    ),
+                    const Text(
+                      "Bienvenido/a al perfil de Docente",
+                      style: TextStyle(
                           color: Color(0xFF0c245e),
                           fontSize: 42,
-                          fontWeight: FontWeight.bold
-                        ),
-                      )
-                    ],
-                  ),
-                )
-              ],
-            ),
-          );
-        }
-      ),
+                          fontWeight: FontWeight.bold),
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
+        );
+      }),
     );
   }
 }
