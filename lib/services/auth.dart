@@ -70,6 +70,8 @@ class AuthService
     }
     catch (e){
       print("Error creando nuevo Usuario en Firebase");
+      print("Email: $email, Password: $password");
+      print("Exepcion: $e");
       return false;
     }
 
@@ -82,6 +84,7 @@ class AuthService
     {
       await nuevoUsuario.delete();
       print("Error cargando datos de usuario a Firebase");
+      print("Exepcion: $e");
       return false;
     }
 
