@@ -22,7 +22,7 @@ class UsuarioBuilder{
     //FireStore
     UserRoles rol = UserRoles.norol;
     String nombre = "Anonimo";
-    String foto = "assets/images/defaultProfilePhoto.png";
+    String foto = "https://firebasestorage.googleapis.com/v0/b/ept-qa-51bf5.appspot.com/o/usersdata%2Fdefault%2FdefaultProfilePhoto.png?alt=media&token=2b55836d-8d41-4525-a41f-c41f0d49a0c3&_gl=1*raas82*_ga*MTM1NDc2MjA5Mi4xNjkyMzE2ODcx*_ga_CW55HF8NVT*MTY5NjgwODU2Mi40Mi4xLjE2OTY4MDg2MTMuOS4wLjA.";
 
     //Obtener datos de FireStore
     Map<String,dynamic>? userdata;
