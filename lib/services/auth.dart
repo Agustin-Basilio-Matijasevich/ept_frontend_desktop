@@ -53,37 +53,39 @@ class AuthService
 
 
   //Crear Usuario
-  Future<bool> createUser(String email, String password, UserRoles rol, String nombre, File? foto) async
+  Future<bool> createUser(String email, String password, UserRoles rol, String nombre) async
   {
-    User? nuevoUsuario = null;
-    String uploadedFoto = '';
-    Map<String,String> userdata;
+    User nuevoUsuario;
 
     try {
-      UserCredential credencial = await _auth.createUserWithEmailAndPassword(
-          email: email, password: password);
-      nuevoUsuario = credencial.user;
+      UserCredential credencial = await _auth.createUserWithEmailAndPassword(email: email, password: password);
+      if (credencial.user != null)
+        {
+          nuevoUsuario = credencial.user!;
+        }
+      else
+        {
+          throw Exception("Usuario Nulo");
+        }
     }
     catch (e){
-      nuevoUsuario = null;
+      print("Error creando nuevo Usuario en Firebase");
+      return false;
     }
 
-    if (nuevoUsuario == null)
-      {
-        return false;
-      }
-    else{
-      if (foto != null)
-        {
-          StorageRef fotoRef = _storageRef.child("usersdata").child(nuevoUsuario.uid).child("profileimage.jpg");
-          UploadTaskForAll uploadTaskForAll = fotoRef.putFile(foto);
-          uploadedFoto = await fotoRef.getDownloadURL();
-        }
+    Map<String,String> userdata = {'nombre':nombre,'rol':rol.toString()};
 
-      userdata = {'foto':uploadedFoto,'nombre':nombre,'rol':rol.toString()};
+    try{
       await _db.collection("usuarios").doc(nuevoUsuario.uid).set(userdata);
-      return true;
     }
+    catch (e)
+    {
+      await nuevoUsuario.delete();
+      print("Error cargando datos de usuario a Firebase");
+      return false;
+    }
+
+    return true;
 
   }
 

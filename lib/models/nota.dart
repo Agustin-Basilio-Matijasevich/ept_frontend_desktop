@@ -1,13 +1,13 @@
 
 
 class Nota{
-  final String nombrecurso;
+  final DateTime fecha;
   final int nota;
 
-  Nota(this.nombrecurso,this.nota);
+  Nota(this.fecha,this.nota);
 
   @override
   String toString(){
-    return 'Nombre del Curso: $nombrecurso, Nota: $nota';
+    return 'Fecha: $fecha, Nota: $nota';
   }
 }
