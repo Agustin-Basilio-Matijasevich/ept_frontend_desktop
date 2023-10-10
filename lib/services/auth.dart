@@ -61,8 +61,15 @@ class AuthService {
         throw Exception("Usuario Nulo");
       }
 
-      await _auth.signOut();
-      await _auth.signInWithEmailAndPassword(email: oldEmail, password: oldPassword);
+      await logout();
+      bool flag = await login(oldEmail, oldPassword);
+
+      if (flag == false)
+        {
+          await login(email, password);
+          await _auth.currentUser?.delete();
+          throw Exception("Clave de usuario admin incorrecta");
+        }
 
     } catch (e) {
       print("Error creando nuevo Usuario en Firebase");
