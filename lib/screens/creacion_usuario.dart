@@ -202,10 +202,11 @@ class FormularioState extends State<Formulario> {
                       builder: (context) {
                         return AlertDialog(
                           title: const Text("Respuesta Creación"),
-                          content: const Text("Usuario creado con éxito"),
+                          content: const Text("Usuario creado con éxito, se procede a la pantalla de Login"),
                           actions: [
                             TextButton(
                               onPressed: () {
+                                Navigator.of(context).pop();
                                 Navigator.of(context).pop();
                               },
                               child: const Text("Aceptar"),
@@ -225,10 +226,11 @@ class FormularioState extends State<Formulario> {
                         return AlertDialog(
                           title: const Text("Respuesta Creación"),
                           content: const Text(
-                              "Ocurrió un error y no se pudo crear el usuario"),
+                              "Ocurrió un error y no se pudo crear el usuario, se procede a la pantalla Home"),
                           actions: [
                             TextButton(
                                 onPressed: () {
+                                  Navigator.of(context).pop();
                                   Navigator.of(context).pop();
                                 },
                                 child: const Text("Aceptar"))

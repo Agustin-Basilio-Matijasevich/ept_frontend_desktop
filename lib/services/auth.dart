@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ept_frontend/models/usuario.dart';
 import 'package:firebase_for_all/firebase_for_all.dart';
 
+import '../firebase_options.dart';
+
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuthForAll
       .instance; //Define la instancia de autenticacion para firebase
@@ -49,7 +51,7 @@ class AuthService {
 
   //Crear Usuario
   Future<bool> createUser(
-      String email, String password, UserRoles rol, String nombre, String oldEmail, String oldPassword) async {
+      String email, String password, UserRoles rol, String nombre) async {
     User nuevoUsuario;
 
     try {
@@ -60,16 +62,6 @@ class AuthService {
       } else {
         throw Exception("Usuario Nulo");
       }
-
-      await logout();
-      bool flag = await login(oldEmail, oldPassword);
-
-      if (flag == false)
-        {
-          await login(email, password);
-          await _auth.currentUser?.delete();
-          throw Exception("Clave de usuario admin incorrecta");
-        }
 
     } catch (e) {
       print("Error creando nuevo Usuario en Firebase");
@@ -89,6 +81,8 @@ class AuthService {
       print("Exepcion: $e");
       return false;
     }
+
+    await logout();
 
     return true;
   }
