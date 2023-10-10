@@ -24,13 +24,6 @@ class UsuarioBuilder{
     String nombre = "Anonimo";
     String foto = '';
 
-    try{
-      foto = await FirebaseStorageForAll.instance.ref("/usersdata/default/defaultProfilePhoto.png").getDownloadURL();
-    }
-    catch (e){
-      print("No se pudo obtener foto default. Exeption: $e");
-    }
-
     //Obtener datos de FireStore
     Map<String,dynamic>? userdata;
 

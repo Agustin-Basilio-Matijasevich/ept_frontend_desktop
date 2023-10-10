@@ -49,7 +49,7 @@ class AuthService {
 
   //Crear Usuario
   Future<bool> createUser(
-      String email, String password, UserRoles rol, String nombre) async {
+      String email, String password, UserRoles rol, String nombre, String oldEmail, String oldPassword) async {
     User nuevoUsuario;
 
     try {
@@ -60,6 +60,10 @@ class AuthService {
       } else {
         throw Exception("Usuario Nulo");
       }
+
+      await _auth.signOut();
+      await _auth.signInWithEmailAndPassword(email: oldEmail, password: oldPassword);
+
     } catch (e) {
       print("Error creando nuevo Usuario en Firebase");
       print("Email: $email, Password: $password");

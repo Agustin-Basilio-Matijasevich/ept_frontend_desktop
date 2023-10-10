@@ -30,24 +30,45 @@ class LoginButton extends StatelessWidget {
         },
       );
     } else {
-      print(user.foto);
-      return TextButton.icon(
-        style: const ButtonStyle(
-          foregroundColor: MaterialStatePropertyAll(Colors.white),
-        ),
-        icon: Image.network(
-          user.foto,
-          width: 32,
-          height: 32,
-        ),
-        label: Text(
-          'Hola, ${user.nombre}',
-          style: const TextStyle(fontSize: 18),
-        ),
-        onPressed: () {
-          _auth.logout();
-        },
-      );
+      if (user.foto != ''){
+        return TextButton.icon(
+          style: const ButtonStyle(
+            foregroundColor: MaterialStatePropertyAll(Colors.white),
+          ),
+          icon: Image.network(
+            user.foto,
+            width: 32,
+            height: 32,
+          ),
+          label: Text(
+            'Hola, ${user.nombre}',
+            style: const TextStyle(fontSize: 18),
+          ),
+          onPressed: () {
+            _auth.logout();
+          },
+        );
+      }
+      else{
+        return TextButton.icon(
+          style: const ButtonStyle(
+            foregroundColor: MaterialStatePropertyAll(Colors.white),
+          ),
+          icon: Image.asset(
+            'assets/images/defaultProfilePhoto.png',
+            width: 32,
+            height: 32,
+          ),
+          label: Text(
+            'Hola, ${user.nombre}',
+            style: const TextStyle(fontSize: 18),
+          ),
+          onPressed: () {
+            _auth.logout();
+          },
+        );
+      }
+
     }
   }
 }
