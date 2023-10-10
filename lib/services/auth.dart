@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:ept_frontend/firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ept_frontend/models/usuario.dart';
 import 'package:firebase_for_all/firebase_for_all.dart';
@@ -10,7 +9,7 @@ class AuthService {
   final FirestoreItem _db =
       FirestoreForAll.instance; //Inicializo instancia de firestore
   final StorageRef _storageRef =
-      FirebaseStorageForAll.instance.ref(DefaultStorageOption.rootfolder);
+      FirebaseStorageForAll.instance.ref();
 
   //Metodo para obtener el usuario personalizado mediante la escucha de un stream
   Stream<Usuario?> get usuario {
@@ -82,4 +81,26 @@ class AuthService {
 
     return true;
   }
+
+  //Actualizar Imagen de usuario
+  Future<bool> updateUserImg(String userId, File foto) async {
+    StorageRef rutaImg = _storageRef.child("usersdata").child(userId).child("defaultProfilePhoto.png");
+    DocRef userdata = _db.collection("usuarios").doc(userId);
+    String imgUrl;
+
+    UploadTaskForAll subida = rutaImg.putFile(foto);
+
+    try{
+      imgUrl = await rutaImg.getDownloadURL();
+      await userdata.update({'foto' : imgUrl});
+    }
+    catch(e){
+      print ("Error grabando imagen. Exepcion: $e");
+      return false;
+    }
+
+    return true;
+    
+  }
+
 }

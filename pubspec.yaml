@@ -39,6 +39,9 @@ dependencies:
   #Componentes de Firebase con soporte desktop
   firebase_for_all: ^0.1.1
 
+  #Componentes de Firebase sin soporte desktop (For dataTypes)
+  firebase_auth: ^3.11.2
+
   #Demas dependencias
   provider: ^6.0.5
   image_picker: ^1.0.4

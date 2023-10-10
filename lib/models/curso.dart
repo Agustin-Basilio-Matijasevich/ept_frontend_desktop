@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 
 enum DiaSemana{
   lunes,
@@ -10,8 +11,8 @@ enum DiaSemana{
 class Curso {
   final String nombre;
   final DiaSemana dia;
-  final String horainicio;
-  final String horafin;
+  final TimeOfDay horainicio;
+  final TimeOfDay horafin;
   final String aula;
 
   Curso(this.nombre,this.dia,this.horainicio,this.horafin,this.aula);
