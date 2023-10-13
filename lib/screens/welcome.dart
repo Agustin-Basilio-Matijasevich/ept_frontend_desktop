@@ -1,5 +1,6 @@
 import 'package:ept_frontend/screens/horarios.dart';
 import 'package:ept_frontend/screens/pago_cuotas.dart';
+import 'package:ept_frontend/screens/perfil.dart';
 import 'package:ept_frontend/widgets/footer.dart';
 import 'package:ept_frontend/widgets/login_button.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import '../models/usuario.dart';
 import 'alumnos.dart';
 import 'aulas.dart';
 import 'boletin.dart';
+import 'creacion_curso.dart';
 import 'creacion_usuario.dart';
 import 'deudores.dart';
 import 'notas.dart';
@@ -128,16 +130,21 @@ class Welcome extends StatelessWidget {
         ),
       ),
     );
+
+    final profile = Seccion(context, 'Perfil', Perfil(), Icons.person);
+
     switch (usuario.rol) {
       case UserRoles.docente:
         return [
           header,
+          profile,
           Seccion(context, 'Lista de alumnos', Alumnos(), Icons.list),
           Seccion(context, 'Horarios', Horarios(), Icons.watch_later_outlined),
           Seccion(context, 'Carga de notas', Notas(), Icons.grade),
         ];
       case UserRoles.estudiante:
         return [
+          profile,
           header,
           Seccion(context, 'Horarios', Horarios(), Icons.watch_later_outlined),
           Seccion(context, 'Boletin', Boletin(), Icons.grade),
@@ -145,6 +152,7 @@ class Welcome extends StatelessWidget {
       case UserRoles.padre:
         return [
           header,
+          profile,
           Seccion(context, 'Pago de cuotas', PagoCuotas(), Icons.receipt),
           Seccion(context, 'Horarios', Horarios(), Icons.watch_later_outlined),
           Seccion(context, 'Boletin', Boletin(), Icons.grade),
@@ -152,16 +160,20 @@ class Welcome extends StatelessWidget {
       case UserRoles.nodocente:
         return [
           header,
+          profile,
           Seccion(context, 'Deudores', Deudores(), Icons.money_off),
           Seccion(context, 'Alumnos', Alumnos(), Icons.school),
           Seccion(context, 'Horarios', Horarios(), Icons.watch_later_outlined),
           Seccion(context, 'Asignación de aulas', Aulas(), Icons.room),
           Seccion(context, 'Creación de Usuarios', CreacionUsuario(),
-              Icons.people_outline_sharp)
+              Icons.people_outline_sharp),
+          Seccion(context, 'Creación de Curso', CreacionCurso(),
+              Icons.location_pin),
         ];
       default:
         return [
           header,
+          profile,
         ];
     }
   }

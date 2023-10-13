@@ -6,7 +6,9 @@ class Deudores extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: Text('Deudores'),
+      ),
       body: TablaDeudores(),
     );
   }
@@ -22,7 +24,7 @@ class TablaDeudores extends StatefulWidget {
 class _TablaDeudoresState extends State<TablaDeudores> {
   var ejemplo = <AlumnoCuota>[
     AlumnoCuota(
-        'Avril', '43887449', 'Daniel', '22687430', '3624171960', 'Febrero 23')
+        'Pepe', '43214321', 'Jose', '12341234', '3624123456', 'Febrero 23')
   ];
   @override
   Widget build(BuildContext context) {

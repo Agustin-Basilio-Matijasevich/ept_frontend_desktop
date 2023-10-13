@@ -12,8 +12,18 @@ class CreacionUsuario extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: Formulario(),
+      appBar: AppBar(
+        title: Text('Creación de usuario'),
+      ),
+      body: Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        alignment: Alignment.center,
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width / 2,
+          child: const Formulario(),
+        ),
+      ),
     );
   }
 }
@@ -202,7 +212,8 @@ class FormularioState extends State<Formulario> {
                       builder: (context) {
                         return AlertDialog(
                           title: const Text("Respuesta Creación"),
-                          content: const Text("Usuario creado con éxito, se procede a la pantalla de Login"),
+                          content: const Text(
+                              "Usuario creado con éxito, se procede a la pantalla de Login"),
                           actions: [
                             TextButton(
                               onPressed: () {

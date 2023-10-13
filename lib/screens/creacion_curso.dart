@@ -1,19 +1,31 @@
 // ignore_for_file: unnecessary_this
 
 import 'package:ept_frontend/main.dart';
+import 'package:ept_frontend/models/curso.dart';
 import 'package:ept_frontend/models/usuario.dart';
 import 'package:flutter/material.dart';
 
 import '../services/auth.dart';
+import '../services/businessdata.dart';
 
-class CreacionUsuario extends StatelessWidget {
-  const CreacionUsuario({super.key});
+class CreacionCurso extends StatelessWidget {
+  const CreacionCurso({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: Formulario(),
+      appBar: AppBar(
+        title: Text('Creación de Curso'),
+      ),
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        alignment: Alignment.center,
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width / 2,
+          child: const Formulario(),
+        ),
+      ),
     );
   }
 }
@@ -31,6 +43,7 @@ class FormularioState extends State<Formulario> {
   bool esVisible = false;
   String? nombre = '';
   String? aula = '';
+  DiaSemana? diaSemana;
   TimeOfDay? horaInicio = null;
   TimeOfDay? horaFin = null;
 
@@ -48,7 +61,11 @@ class FormularioState extends State<Formulario> {
     return null;
   }
 
+  final horaInicioController = TextEditingController();
+  final horaFinController = TextEditingController();
+
   final AuthService auth = AuthService();
+  final BusinessData business = BusinessData();
 
   Widget _gap() => const SizedBox(height: 16);
 
@@ -78,7 +95,7 @@ class FormularioState extends State<Formulario> {
             decoration: const InputDecoration(
               labelText: 'Nombre',
               hintText: 'Ingrese un nombre',
-              prefixIcon: Icon(Icons.person),
+              prefixIcon: Icon(Icons.edit_location_alt_outlined),
               border: OutlineInputBorder(),
             ),
           ),
@@ -109,74 +126,152 @@ class FormularioState extends State<Formulario> {
             ),
           ),
           _gap(),
+          // Dia de cursado
+          DropdownMenu<DiaSemana>(
+            width: MediaQuery.of(context).size.width / 2,
+            onSelected: (DiaSemana? value) {
+              setState(() {
+                this.diaSemana = value;
+              });
+            },
+            dropdownMenuEntries: DiaSemana.values
+                .map<DropdownMenuEntry<DiaSemana>>((DiaSemana value) {
+              String label = '';
+              switch (value) {
+                case DiaSemana.lunes:
+                  label = 'Lunes';
+                  break;
+                case DiaSemana.martes:
+                  label = 'Martes';
+                  break;
+                case DiaSemana.miercoles:
+                  label = 'Miercoles';
+                  break;
+                case DiaSemana.jueves:
+                  label = 'Jueves';
+                  break;
+                case DiaSemana.viernes:
+                  label = 'Viernes';
+                  break;
+              }
+              return DropdownMenuEntry<DiaSemana>(
+                value: value,
+                label: label,
+              );
+            }).toList(),
+            hintText: 'Dia de la semana',
+          ),
+          _gap(),
+          // Horario Inicio
+          TextFormField(
+            controller: horaInicioController,
+            readOnly: true,
+            decoration: const InputDecoration(
+              labelText: 'Hora de inicio',
+              hintText: 'Pulse para elegir un horario',
+              prefixIcon: Icon(Icons.timer),
+              border: OutlineInputBorder(),
+            ),
+            onTap: () async {
+              TimeOfDay? timePicked = await showTimePicker(
+                context: context,
+                initialTime: TimeOfDay.now(),
+                initialEntryMode: TimePickerEntryMode.input,
+              );
+              horaInicioController.text =
+                  '${timePicked?.hour}:${timePicked?.minute}';
+              setState(() => horaInicio = timePicked);
+            },
+          ),
+          _gap(),
+          // Horario Fin
+          TextFormField(
+            controller: horaFinController,
+            readOnly: true,
+            decoration: const InputDecoration(
+              labelText: 'Hora de fin',
+              hintText: 'Pulse para elegir un horario',
+              prefixIcon: Icon(Icons.timer),
+              border: OutlineInputBorder(),
+            ),
+            onTap: () async {
+              TimeOfDay? timePicked = await showTimePicker(
+                context: context,
+                initialTime: TimeOfDay.now(),
+                initialEntryMode: TimePickerEntryMode.input,
+              );
+              horaFinController.text =
+                  '${timePicked?.hour}:${timePicked?.minute}';
+              setState(() => horaFin = timePicked);
+            },
+          ),
           _gap(),
           // Enviar
-          // SizedBox(
-          //   width: double.infinity,
-          //   child: ElevatedButton(
-          //     style: ElevatedButton.styleFrom(
-          //       shape: RoundedRectangleBorder(
-          //           borderRadius: BorderRadius.circular(4)),
-          //     ),
-          //     child: const Padding(
-          //       padding: EdgeInsets.all(10.0),
-          //       child: Text(
-          //         'Crear Usuario',
-          //         style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          //       ),
-          //     ),
-          //     onPressed: () async {
-          //       final bool userCreationResponse;
-          //       if (_formKey.currentState!.validate()) {
-          //         userCreationResponse =
-          //             await auth.createUser(email!, password!, rol!, nombre!);
-          //         if (userCreationResponse) {
-          //           showDialog(
-          //             context: navigatorKey.currentContext!,
-          //             builder: (context) {
-          //               return AlertDialog(
-          //                 title: const Text("Respuesta Creación"),
-          //                 content: const Text("Usuario creado con éxito"),
-          //                 actions: [
-          //                   TextButton(
-          //                     onPressed: () {
-          //                       Navigator.of(context).pop();
-          //                     },
-          //                     child: const Text("Aceptar"),
-          //                   ),
-          //                 ],
-          //               );
-          //             },
-          //           );
-          //           email = '';
-          //           password = '';
-          //           rol = null;
-          //           nombre = '';
-          //         } else {
-          //           showDialog(
-          //             context: navigatorKey.currentContext!,
-          //             builder: (context) {
-          //               return AlertDialog(
-          //                 title: const Text("Respuesta Creación"),
-          //                 content: const Text(
-          //                     "Ocurrió un error y no se pudo crear el usuario"),
-          //                 actions: [
-          //                   TextButton(
-          //                       onPressed: () {
-          //                         Navigator.of(context).pop();
-          //                       },
-          //                       child: const Text("Aceptar"))
-          //                 ],
-          //               );
-          //             },
-          //           );
-          //         }
-          //       }
-
-          //       //Falta vformKeyficar por las cuentas guardadas en firebase.
-          //     },
-          //   ),
-          // ),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4)),
+              ),
+              child: const Padding(
+                padding: EdgeInsets.all(10.0),
+                child: Text(
+                  'Crear Curso',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+              onPressed: () async {
+                final bool formSent = await business.crearCurso(Curso(
+                  this.nombre!,
+                  this.diaSemana!,
+                  this.horaInicio!,
+                  this.horaFin!,
+                  this.aula!,
+                ));
+                if (_formKey.currentState!.validate()) {
+                  if (formSent) {
+                    showDialog(
+                      context: navigatorKey.currentContext!,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: const Text("Respuesta Creación Curso"),
+                          content: const Text("Curso creado con exito!"),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text("Aceptar"),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                    this.nombre = '';
+                  } else {
+                    showDialog(
+                      context: navigatorKey.currentContext!,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: const Text("Respuesta Creación Curso"),
+                          content: const Text(
+                              "Ocurrió un error y no se pudo crear el curso"),
+                          actions: [
+                            TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text("Aceptar"))
+                          ],
+                        );
+                      },
+                    );
+                  }
+                }
+              },
+            ),
+          ),
         ],
       ),
     );
