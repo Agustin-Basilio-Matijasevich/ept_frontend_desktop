@@ -15,7 +15,7 @@ class AuthService {
 
   //Metodo para obtener el usuario personalizado mediante la escucha de un stream
   Stream<Usuario?> get usuario {
-    return _auth.authStateChanges().asyncMap((user) => _builduser(
+    return _auth.userChanges().asyncMap((user) => _builduser(
         user)); //Retorna la escucha del servicio de estado de autenticacion de firebase que contiene el usuario de firebase, pero antes lo pasa por el costructor de usuario personalizado
   }
 
@@ -95,17 +95,30 @@ class AuthService {
 
     UploadTaskForAll subida = rutaImg.putFile(foto);
 
-    try{
-      imgUrl = await rutaImg.getDownloadURL();
-      await userdata.update({'foto' : imgUrl});
-    }
-    catch(e){
-      print ("Error grabando imagen. Exepcion: $e");
-      return false;
+    while(true) {
+      await for (ProcessTask event in subida.snapshotEvents) {
+        if (event.state == TaskState.success) {
+          try {
+            imgUrl = await rutaImg.getDownloadURL();
+            await userdata.update({'foto': imgUrl});
+          }
+          catch (e) {
+            print("Error grabando imagen. Exepcion: $e");
+            return false;
+          }
+          await _auth.currentUser!.reload();
+          return true;
+        }
+        else if (event.state == TaskState.running) {
+
+        }
+        else {
+          print("Error Subiendo Imagen");
+          return false;
+        }
+      }
     }
 
-    return true;
-    
   }
 
 }

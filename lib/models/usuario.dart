@@ -32,6 +32,7 @@ class UsuarioBuilder{
     }
     catch (e)
     {
+      print("Error obteniendo documento de usuario. Exeption: $e");
       userdata = null;
     }
     //Datos de fireStore en variable userdata

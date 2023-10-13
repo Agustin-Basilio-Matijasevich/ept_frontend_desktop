@@ -14,6 +14,25 @@ class Perfil extends StatelessWidget {
   Widget build(BuildContext context) {
     final usuario = Provider.of<Usuario?>(context);
     final auth = AuthService();
+    final imagenusr;
+
+    if (usuario!.foto == '')
+      {
+        imagenusr = Image.asset(
+          'assets/images/defaultProfilePhoto.png',
+          width: 32,
+          height: 32,
+        );
+      }
+    else
+      {
+        imagenusr = Image.network(
+          usuario!.foto,
+          width: 256,
+          height: 256,
+        );
+      }
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Perfil'),
@@ -70,10 +89,50 @@ class Perfil extends StatelessWidget {
                             },
                           );
                         } else if (result != null) {
-                          auth.updateUserImg(
+                          bool updateimg = await auth.updateUserImg(
                             usuario.uid,
                             File(result.files[0].path!),
                           );
+                          if (updateimg){
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: Text('Exito'),
+                                  content: Text(
+                                      'Imagen de Perfil Actualizada Correctamente'),
+                                  actions: [
+                                    TextButton(
+                                      child: Text('Aceptar'),
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                    )
+                                  ],
+                                );
+                              },
+                            );
+                          }
+                          else{
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: Text('Error'),
+                                  content: Text(
+                                      'Ocurrio un error subiendo la imagen. Intente nuevamente'),
+                                  actions: [
+                                    TextButton(
+                                      child: Text('Aceptar'),
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                    )
+                                  ],
+                                );
+                              },
+                            );
+                          }
                         }
                       },
                       //padding: EdgeInsets.all(50),
@@ -83,11 +142,7 @@ class Perfil extends StatelessWidget {
                             style: BorderStyle.solid,
                           ),
                         ),
-                        child: Image.network(
-                          usuario!.foto,
-                          width: 256,
-                          height: 256,
-                        ),
+                        child: imagenusr,
                       ),
                     ),
                   ),
