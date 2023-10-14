@@ -48,42 +48,20 @@ class BusinessData {
 
   Future<Curso?> getCurso(String nombre) async {
     DocRef documento = _db.collection("cursos").doc(nombre);
-    DocumentSnapshotForAll snapshot;
+    Map<String,dynamic>? json;
 
     try {
-      snapshot = await documento.get();
+      json = await documento.get().then((value) => value.map);
+      if (json == null) {
+        throw Exception('JSON NULO');
+      }
     } catch (e) {
-      print("No se encontro el curso.");
+      print("No se encontro el curso. Exeption: $e");
       return null;
     }
 
-    Map<String, dynamic>? curso = snapshot.map;
+    return Curso.fromJson(json);
 
-    if (curso == null) {
-      print("Error Mapeando Curso, Dato Malo");
-      return null;
-    }
-
-    String nombrecurso;
-    DiaSemana dia;
-    TimeOfDay horainicio;
-    TimeOfDay horafin;
-    String aula;
-
-    try {
-      nombrecurso = nombre;
-      dia = DiaSemana.values
-          .firstWhere((element) => element.toString() == curso['dia']);
-      horainicio =
-          TimeOfDay(hour: curso['horainicio'], minute: curso['minutoinicio']);
-      horafin = TimeOfDay(hour: curso['horafin'], minute: curso['minutofin']);
-      aula = curso['aula'];
-
-      return Curso(nombrecurso, dia, horainicio, horafin, aula);
-    } catch (e) {
-      print("Error Mapeando Curso a Variables, Dato Malo");
-      return null;
-    }
   }
 
   double calcularDeuda(Pago pago) {
@@ -92,28 +70,24 @@ class BusinessData {
 
   //Para vos Master Carter Estos Metodos Jamas Fallan
   Future<bool> crearCurso(Curso curso) async {
-    Curso? flag = await getCurso(curso.nombre);
 
-    if (flag != null) {
+    //Validaciones de Negocio
+    if (null != await getCurso(curso.nombre))
+    {
       print("El curso ya existe.");
       return false;
     }
 
+    //Tarea
     DocRef documento = _db.collection("cursos").doc(curso.nombre);
 
-    Map<String, String> json = {
-      'dia': curso.dia.toString(),
-      'horainicio': curso.horainicio.hour.toString(),
-      'minutoinicio': curso.horainicio.minute.toString(),
-      'horafin': curso.horafin.hour.toString(),
-      'minutofin': curso.horafin.minute.toString(),
-      'aula': curso.aula,
-    };
-
-    try {
-      await documento.set(json);
-    } catch (e) {
-      print("Error creando curso. Exeption: $e");
+    try
+    {
+      await documento.set(curso.toJson());
+    }
+    catch (e)
+    {
+      print("Error grabando curso en la BD. Exeption: $e");
       return false;
     }
 

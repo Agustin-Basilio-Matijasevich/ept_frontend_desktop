@@ -110,7 +110,7 @@ class AuthService {
           return true;
         }
         else if (event.state == TaskState.running) {
-
+          //Esperar
         }
         else {
           print("Error Subiendo Imagen");
