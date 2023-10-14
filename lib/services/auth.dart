@@ -70,7 +70,7 @@ class AuthService {
       return false;
     }
 
-    Map<String, String> userdata = {'nombre': nombre, 'rol': rol.toString()};
+    Map<String, String> userdata = {'nombre': nombre, 'rol': rol.toString(), 'email' : email};
 
     try {
       await _db.collection("usuarios").doc(nuevoUsuario.uid).set(userdata);

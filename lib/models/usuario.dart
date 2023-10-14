@@ -79,6 +79,26 @@ class Usuario {
 
   Usuario(this.uid,this.correo,this.rol,this.nombre,this.foto);
 
+  static Usuario? fromJson (Map<String,dynamic> json)
+  {
+    try
+    {
+      final String uid = json['uid'];
+      final String correo = json['email'];
+      final UserRoles rol = UserRoles.values.firstWhere((element) => element.toString() == json['rol']);
+      final String nombre = json['nombre'];
+      final String foto = json['foto'];
+
+      return Usuario(uid, correo, rol, nombre, foto);
+
+    }
+    catch (e)
+    {
+      print("Error parseando JSON a Usuario. Exeption: $e");
+      return null;
+    }
+  }
+
   @override
   String toString(){
     return 'UID: $uid, Rol: $rol, Correo: $correo, Nombre: $nombre, Foto: $foto';

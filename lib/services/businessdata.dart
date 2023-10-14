@@ -1,6 +1,7 @@
 import 'package:ept_frontend/models/nota.dart';
 import 'package:ept_frontend/models/pago.dart';
 import 'package:ept_frontend/models/usuario.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_for_all/firebase_for_all.dart';
 import 'package:ept_frontend/models/curso.dart';
 import 'package:flutter/material.dart';
@@ -316,18 +317,93 @@ class BusinessData {
 
   //Listadores
   Future<List<Curso>> getCursos() async {
-    return [];
+    List<DocumentSnapshotForAll<Map<String, Object?>>> documentos;
+    List<Curso> cursos = [];
+
+    try
+    {
+      documentos = await _db.collection('cursos').get().then((value) => value.docs);
+    }
+    catch (e)
+    {
+      print("No se pudieron obtener los cursos de la DB. Exeption: $e");
+      return [];
+    }
+
+    for (var element in documentos) {
+      Map<String,dynamic>? json = element.map;
+
+      if (json != null)
+        {
+          Curso? curso = Curso.fromJson(json);
+
+          if (curso != null)
+            {
+              cursos.add(curso);
+            }
+
+        }
+
+    }
+
+    return cursos;
+
   }
 
   //Lista todos los usuarios que deben y te los devuelve con el monto de la deuda
-  //Determina la deuda viendo si registran un pago en el mes corriente
   Future<List<Map<Usuario, double>>> listarDeudores() async {
-    return [];
+    List<Usuario> usuarios = await listarUsuarios();
+    List<Map<Usuario, double>> deudores = [];
+
+    for (var usuario in usuarios)
+      {
+        if (usuario.rol == UserRoles.estudiante)
+          {
+            double deuda = await getDeuda(usuario);
+            if (deuda > 0)
+              {
+                deudores.add({usuario:deuda});
+              }
+          }
+      }
+
+    return deudores;
   }
 
   // Para agregar pantalla para no docentes. El filtrado lo hago del lado del front
   Future<List<Usuario>> listarUsuarios() async {
-    return [];
+    List<Usuario> usuarios = [];
+    List<DocumentSnapshotForAll<Map<String, Object?>>> documentos;
+
+    try
+    {
+      documentos = await _db.collection('usuarios').get().then((value) => value.docs);
+    }
+    catch (e)
+    {
+      print("Error obteniendo usuarios de DB. Exeption: $e");
+      return [];
+    }
+
+    for (var documento in documentos)
+      {
+        Map<String,dynamic>? json = documento.map;
+
+        if (json != null)
+          {
+            json['uid'] = documento.id;
+            Usuario? usuario = Usuario.fromJson(json);
+
+            if (usuario != null)
+              {
+                usuarios.add(usuario);
+              }
+
+          }
+
+      }
+
+    return usuarios;
   }
 
 
