@@ -87,7 +87,16 @@ class Usuario {
       final String correo = json['email'];
       final UserRoles rol = UserRoles.values.firstWhere((element) => element.toString() == json['rol']);
       final String nombre = json['nombre'];
-      final String foto = json['foto'];
+      final String foto;
+
+      if (json['foto'] == null)
+        {
+          foto = '';
+        }
+      else
+        {
+          foto = json['foto'];
+        }
 
       return Usuario(uid, correo, rol, nombre, foto);
 
