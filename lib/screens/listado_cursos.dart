@@ -35,7 +35,7 @@ class GrillaCursosState extends State<GrillaCursos> {
       builder: (context, snapshot) {
         print('Iniciando builder');
         if (snapshot.connectionState == ConnectionState.done) {
-          print('Conexion establecida');
+          print('Conexion finalizada');
           if (snapshot.data!.isEmpty) {
             print('Datos vacios');
             return Icon(Icons.cancel_presentation_sharp);
@@ -54,9 +54,10 @@ class GrillaCursosState extends State<GrillaCursos> {
                   return DataRow(cells: [
                     DataCell(Text(e.nombre)),
                     DataCell(Text(e.dia.name)),
-                    DataCell(
-                        Text('${e.horainicio.hour}:${e.horainicio.minute}')),
-                    DataCell(Text('${e.horafin.hour}:${e.horafin.minute}')),
+                    DataCell(Text(
+                        '${e.horainicio.hour}:${e.horainicio.minute.toString().padLeft(2, '0')}')),
+                    DataCell(Text(
+                        '${e.horafin.hour}:${e.horafin.minute.toString().padLeft(2, '0')}')),
                     DataCell(Text(e.aula)),
                   ]);
                 },

@@ -13,16 +13,17 @@ class Deudores extends StatelessWidget {
       appBar: AppBar(
         title: Text('Deudores'),
       ),
-      body: TablaDeudores(
-        dataset: [],
+      body: Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        child: TablaDeudores(),
       ),
     );
   }
 }
 
 class TablaDeudores extends StatefulWidget {
-  List<Map<Usuario, double>>? dataset;
-  TablaDeudores({super.key, required this.dataset});
+  TablaDeudores({super.key});
 
   @override
   State<TablaDeudores> createState() => _TablaDeudoresState();
@@ -32,48 +33,58 @@ class _TablaDeudoresState extends State<TablaDeudores> {
   var ejemplo = [];
   final servicio = BusinessData();
 
-  // Future<List<_fila>> getData() async {
-  //   final servicio = BusinessData();
-  //   List<Map<Usuario, double>> estudianteDeuda =
-  //       await servicio.listarDeudores();
-  //   var set = [];
-  //   estudianteDeuda.forEach((element) async {
-  //     set.add(Map(await servicio.getTutor(element.keys.first));
-  //   });
-  //   return estudianteDeuda.map(
-  //     (e) {
-  //       return _fila();
-  //     },
-  //   ).toList();
-  // }
+  Future<List<_fila>> getData() async {
+    final servicio = BusinessData();
+    List<Map<Usuario, double>> estudianteDeuda =
+        await servicio.listarDeudores();
+    var dataset = <_fila>[];
+
+    for (var deudor in estudianteDeuda) {
+      var alumno = deudor.keys.first;
+      var deuda = deudor.values.first;
+      var tutor;
+      try {
+        tutor = await servicio.getPadres(alumno).then((value) => value.first);
+      } catch (e) {
+        tutor = null;
+      }
+      dataset.add(_fila(alumno: alumno, tutor: tutor, deuda: deuda));
+    }
+    return dataset;
+  }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: servicio.listarDeudores(),
+      future: getData(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          return DataTable(
-            columns: const [
-              DataColumn(label: Text('Nombre del Alumno')),
-              DataColumn(label: Text('Email del Alumno')),
-              // DataColumn(label: Text('Nombre del Tutor')),
-              // DataColumn(label: Text('Email del tutor')),
-              DataColumn(label: Text('Monto de deuda')),
-            ],
-            rows: snapshot.data!.map((e) {
-              var alumno = e.keys.first;
-              var deuda = e.values.first;
-
-              return DataRow(cells: [
-                DataCell(Text(alumno.nombre)),
-                DataCell(Text(alumno.correo)),
-                DataCell(Text(deuda.toString())),
-              ]);
-            }).toList(),
-          );
+          if (snapshot.data!.isNotEmpty) {
+            return DataTable(
+              columns: const [
+                DataColumn(label: Text('Nombre del Alumno')),
+                DataColumn(label: Text('Email del Alumno')),
+                DataColumn(label: Text('Nombre del Tutor')),
+                DataColumn(label: Text('Email del tutor')),
+                DataColumn(label: Text('Monto de deuda')),
+              ],
+              rows: snapshot.data!.map((e) {
+                return DataRow(cells: [
+                  DataCell(Text(e.alumno.nombre)),
+                  DataCell(Text(e.alumno.correo)),
+                  DataCell(Text((e.tutor != null) ? e.tutor!.nombre : '')),
+                  DataCell(Text((e.tutor != null) ? e.tutor!.correo : '')),
+                  DataCell(Text(e.deuda.toString())),
+                ]);
+              }).toList(),
+            );
+          }
+          return Text('No hay deudores para mostrar');
         } else {
-          return CircularProgressIndicator();
+          return Container(
+            child: CircularProgressIndicator(),
+            alignment: Alignment.center,
+          );
         }
       },
     );
@@ -82,11 +93,11 @@ class _TablaDeudoresState extends State<TablaDeudores> {
 
 class _fila {
   Usuario alumno;
-  Usuario tutor;
+  Usuario? tutor;
   double deuda;
   _fila({
     required this.alumno,
-    required this.tutor,
+    this.tutor,
     required this.deuda,
   });
 }
