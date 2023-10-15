@@ -52,7 +52,7 @@ class _TablaDeudoresState extends State<TablaDeudores> {
     return FutureBuilder(
       future: servicio.listarDeudores(),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.active) {
+        if (snapshot.connectionState == ConnectionState.done) {
           return DataTable(
             columns: const [
               DataColumn(label: Text('Nombre del Alumno')),
