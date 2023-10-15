@@ -68,7 +68,7 @@ class BusinessData {
 
     if (pago == null)
       {
-        return 0;
+        return 15000;
       }
 
     double pagofinal = 0;
