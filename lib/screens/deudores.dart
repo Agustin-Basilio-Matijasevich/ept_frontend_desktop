@@ -1,4 +1,8 @@
+import 'package:ept_frontend/services/businessdata.dart';
 import 'package:flutter/material.dart';
+
+import '../models/usuario.dart';
+// import 'package:pdf/widgets.dart';
 
 class Deudores extends StatelessWidget {
   Deudores({Key? key}) : super(key: key);
@@ -9,60 +13,76 @@ class Deudores extends StatelessWidget {
       appBar: AppBar(
         title: Text('Deudores'),
       ),
-      body: TablaDeudores(),
+      body: TablaDeudores(
+        dataset: [],
+      ),
     );
   }
 }
 
 class TablaDeudores extends StatefulWidget {
-  const TablaDeudores({super.key});
+  List<Map<Usuario, double>>? dataset;
+  TablaDeudores({super.key, required this.dataset});
 
   @override
   State<TablaDeudores> createState() => _TablaDeudoresState();
 }
 
 class _TablaDeudoresState extends State<TablaDeudores> {
-  var ejemplo = <AlumnoCuota>[
-    AlumnoCuota(
-        'Pepe', '43214321', 'Jose', '12341234', '3624123456', 'Febrero 23')
-  ];
+  var ejemplo = [];
+  final servicio = BusinessData();
+
+  // Future<List<_fila>> getData() async {
+  //   final servicio = BusinessData();
+  //   List<Map<Usuario, double>> estudianteDeuda =
+  //       await servicio.listarDeudores();
+  //   var set = [];
+  //   estudianteDeuda.forEach((element) async {
+  //     set.add(Map(await servicio.getTutor(element.keys.first));
+  //   });
+  //   return estudianteDeuda.map(
+  //     (e) {
+  //       return _fila();
+  //     },
+  //   ).toList();
+  // }
+
   @override
   Widget build(BuildContext context) {
-    return DataTable(
-      columns: const [
-        DataColumn(label: Text('Nombre del Alumno')),
-        DataColumn(label: Text('DNI del Alumno')),
-        DataColumn(label: Text('Nombre del Tutor')),
-        DataColumn(label: Text('DNI del tutor')),
-        DataColumn(label: Text('Telefono de Contacto')),
-        DataColumn(label: Text('Mes de deuda')),
-      ],
-      rows: ejemplo
-          .map(
-            (alumno) => DataRow(
-              cells: [
-                DataCell(Text(alumno.nombreAlumno)),
-                DataCell(Text(alumno.dniAlumno)),
-                DataCell(Text(alumno.nombrePadre)),
-                DataCell(Text(alumno.dniPadre)),
-                DataCell(Text(alumno.numeroContacto)),
-                DataCell(Text(alumno.mesDeuda)),
-              ],
-            ),
-          )
-          .toList(),
+    return FutureBuilder(
+      future: servicio.listarDeudores(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.active) {
+          return DataTable(
+            columns: const [
+              DataColumn(label: Text('Nombre del Alumno')),
+              DataColumn(label: Text('Email del Alumno')),
+              DataColumn(label: Text('Nombre del Tutor')),
+              DataColumn(label: Text('Email del tutor')),
+              DataColumn(label: Text('Monto de deuda')),
+            ],
+            rows: snapshot.data!.map((e) {
+              var alumno = e.keys.first;
+              var deuda = e.values.first;
+
+              return DataRow(cells: []);
+            }).toList(),
+          );
+        } else {
+          return CircularProgressIndicator();
+        }
+      },
     );
   }
 }
 
-class AlumnoCuota {
-  String nombreAlumno;
-  String dniAlumno;
-  String nombrePadre;
-  String dniPadre;
-  String numeroContacto;
-  String mesDeuda;
-
-  AlumnoCuota(this.nombreAlumno, this.dniAlumno, this.nombrePadre,
-      this.dniPadre, this.numeroContacto, this.mesDeuda);
+class _fila {
+  Usuario alumno;
+  Usuario tutor;
+  double deuda;
+  _fila({
+    required this.alumno,
+    required this.tutor,
+    required this.deuda,
+  });
 }

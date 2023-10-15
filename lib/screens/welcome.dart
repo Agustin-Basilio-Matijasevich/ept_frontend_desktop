@@ -13,6 +13,7 @@ import 'boletin.dart';
 import 'creacion_curso.dart';
 import 'creacion_usuario.dart';
 import 'deudores.dart';
+import 'listado_cursos.dart';
 import 'notas.dart';
 
 class Welcome extends StatelessWidget {
@@ -169,6 +170,7 @@ class Welcome extends StatelessWidget {
               Icons.people_outline_sharp),
           Seccion(context, 'Creación de Curso', CreacionCurso(),
               Icons.location_pin),
+          Seccion(context, 'Listado de cursos', ListadoCursos(), Icons.list),
         ];
       default:
         return [

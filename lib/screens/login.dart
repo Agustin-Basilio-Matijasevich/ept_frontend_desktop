@@ -1,6 +1,7 @@
 import 'package:ept_frontend/main.dart';
 import 'package:flutter/material.dart';
 import 'package:ept_frontend/services/auth.dart';
+
 class Login extends StatelessWidget {
   Login({Key? key}) : super(key: key);
 
@@ -185,23 +186,24 @@ class EstadoContenidoForm extends State<ContenidoForm> {
                   if (_formKey.currentState!.validate()) {
                     loginResponse = await auth.login(email!, password!);
                     if (loginResponse) {
-
                     } else {
                       showDialog(
-                          context: navigatorKey.currentContext!,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: Text("Respuesta Login"),
-                              content: Text("Las credenciales son incorrectas"),
-                              actions: [
-                                TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: Text("Aceptar"))
-                              ],
-                            );
-                          });
+                        context: navigatorKey.currentContext!,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text("Respuesta Login"),
+                            content: Text("Las credenciales son incorrectas"),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text("Aceptar"),
+                              ),
+                            ],
+                          );
+                        },
+                      );
                     }
                   }
 

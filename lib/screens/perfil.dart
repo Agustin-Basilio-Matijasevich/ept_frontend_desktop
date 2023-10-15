@@ -16,22 +16,19 @@ class Perfil extends StatelessWidget {
     final auth = AuthService();
     final imagenusr;
 
-    if (usuario!.foto == '')
-      {
-        imagenusr = Image.asset(
-          'assets/images/defaultProfilePhoto.png',
-          width: 32,
-          height: 32,
-        );
-      }
-    else
-      {
-        imagenusr = Image.network(
-          usuario!.foto,
-          width: 256,
-          height: 256,
-        );
-      }
+    if (usuario!.foto == '') {
+      imagenusr = Image.asset(
+        'assets/images/defaultProfilePhoto.png',
+        width: 256,
+        height: 256,
+      );
+    } else {
+      imagenusr = Image.network(
+        usuario!.foto,
+        width: 256,
+        height: 256,
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -93,7 +90,7 @@ class Perfil extends StatelessWidget {
                             usuario.uid,
                             File(result.files[0].path!),
                           );
-                          if (updateimg){
+                          if (updateimg) {
                             showDialog(
                               context: context,
                               builder: (context) {
@@ -112,8 +109,7 @@ class Perfil extends StatelessWidget {
                                 );
                               },
                             );
-                          }
-                          else{
+                          } else {
                             showDialog(
                               context: context,
                               builder: (context) {
