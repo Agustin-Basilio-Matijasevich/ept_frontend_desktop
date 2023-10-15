@@ -52,20 +52,24 @@ class _TablaDeudoresState extends State<TablaDeudores> {
     return FutureBuilder(
       future: servicio.listarDeudores(),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.active) {
+        if (snapshot.connectionState == ConnectionState.done) {
           return DataTable(
             columns: const [
               DataColumn(label: Text('Nombre del Alumno')),
               DataColumn(label: Text('Email del Alumno')),
-              DataColumn(label: Text('Nombre del Tutor')),
-              DataColumn(label: Text('Email del tutor')),
+              // DataColumn(label: Text('Nombre del Tutor')),
+              // DataColumn(label: Text('Email del tutor')),
               DataColumn(label: Text('Monto de deuda')),
             ],
             rows: snapshot.data!.map((e) {
               var alumno = e.keys.first;
               var deuda = e.values.first;
 
-              return DataRow(cells: []);
+              return DataRow(cells: [
+                DataCell(Text(alumno.nombre)),
+                DataCell(Text(alumno.correo)),
+                DataCell(Text(deuda.toString())),
+              ]);
             }).toList(),
           );
         } else {
