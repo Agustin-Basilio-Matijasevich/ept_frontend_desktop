@@ -1,3 +1,4 @@
+import 'package:ept_frontend/screens/asignacion_tutor.dart';
 import 'package:ept_frontend/screens/horarios.dart';
 import 'package:ept_frontend/screens/pago_cuotas.dart';
 import 'package:ept_frontend/screens/perfil.dart';
@@ -167,6 +168,8 @@ class Welcome extends StatelessWidget {
           Seccion(context, 'Alumnos', Alumnos(), Icons.school),
           Seccion(context, 'Horarios', Horarios(), Icons.watch_later_outlined),
           Seccion(context, 'Asignación de aulas', Aulas(), Icons.room),
+          Seccion(context, 'Asignacion de tutores', AsignacionTutor(),
+              Icons.people),
           Seccion(context, 'Creación de Usuarios', CreacionUsuario(),
               Icons.people_outline_sharp),
           Seccion(context, 'Creación de Curso', CreacionCurso(),

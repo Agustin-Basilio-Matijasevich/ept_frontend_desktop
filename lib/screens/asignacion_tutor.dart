@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../models/usuario.dart';
 import '../services/businessdata.dart';
 
+// Ta enorme esta pantalla :(
 class AsignacionTutor extends StatelessWidget {
   AsignacionTutor({Key? key}) : super(key: key);
 
@@ -12,13 +14,20 @@ class AsignacionTutor extends StatelessWidget {
       body: Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
+        alignment: Alignment.topCenter,
+        child: Contenido(),
       ),
     );
   }
 }
 
 class Contenido extends StatefulWidget {
-  const Contenido({super.key});
+  Contenido({super.key});
+  Usuario? estudianteSeleccionado;
+  String? filtroEstudiante;
+  Usuario? tutorSeleccionado;
+  String? filtroTutor;
+  final servicio = BusinessData();
 
   @override
   State<Contenido> createState() => _ContenidoState();
@@ -27,35 +36,193 @@ class Contenido extends StatefulWidget {
 class _ContenidoState extends State<Contenido> {
   @override
   Widget build(BuildContext context) {
-    return Container();
-  }
-}
+    // Fila para mostrar 2 columnas con grilla y filtro de busqueda
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            // Columna para estudiantes
+            Container(
+              height: MediaQuery.of(context).size.height - 100,
+              width: MediaQuery.of(context).size.width / 2,
+              padding: EdgeInsets.all(20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  // Filtro
+                  SizedBox(
+                    width: 100,
+                    // height: 100,
+                    child: TextField(
+                      decoration: InputDecoration(),
+                      enabled: true,
+                      onSubmitted: (value) {
+                        setState(() {
+                          widget.filtroEstudiante = value;
+                        });
+                      },
+                    ),
+                  ),
+                  // Tabla
+                  FutureBuilder(
+                    future: widget.servicio
+                        .listarUsuariosFiltroRol(UserRoles.estudiante),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        var dataset = (widget.filtroEstudiante == null)
+                            ? snapshot.data
+                            : snapshot.data!.where((element) => element.nombre
+                                .toLowerCase()
+                                .contains(
+                                    widget.filtroEstudiante!.toLowerCase()));
+                        if (dataset != null && dataset.isNotEmpty) {
+                          return DataTable(
+                            showCheckboxColumn: true,
+                            onSelectAll: (value) {
+                              setState(() {
+                                widget.estudianteSeleccionado = null;
+                              });
+                            },
+                            columns: const [
+                              DataColumn(label: Text('Nombre')),
+                              DataColumn(label: Text('Correo')),
+                              DataColumn(label: Text('UID')),
+                            ],
+                            rows: dataset
+                                .map(
+                                  (e) => DataRow(
+                                    selected:
+                                        widget.estudianteSeleccionado?.uid ==
+                                            e.uid,
+                                    onSelectChanged: (value) {
+                                      setState(() {
+                                        widget.estudianteSeleccionado = e;
+                                      });
+                                      print(widget.estudianteSeleccionado);
+                                    },
+                                    cells: [
+                                      DataCell(Text(e.nombre)),
+                                      DataCell(Text(e.correo)),
+                                      DataCell(Text(e.uid)),
+                                    ],
+                                  ),
+                                )
+                                .toList(),
+                          );
+                        } else {
+                          return Text('No se encontraron datos para mostrar');
+                        }
+                      } else if (snapshot.connectionState ==
+                          ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      } else {
+                        return const Text('Error');
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
 
-class GrillaTutores extends StatefulWidget {
-  GrillaTutores({super.key});
-  final servicio = BusinessData();
-
-  @override
-  State<GrillaTutores> createState() => _GrillaTutoresState();
-}
-
-class _GrillaTutoresState extends State<GrillaTutores> {
-  @override
-  Widget build(BuildContext context) {
-    return Container();
-  }
-}
-
-class GrillaEstudiantes extends StatefulWidget {
-  const GrillaEstudiantes({super.key});
-
-  @override
-  State<GrillaEstudiantes> createState() => _GrillaEstudiantesState();
-}
-
-class _GrillaEstudiantesState extends State<GrillaEstudiantes> {
-  @override
-  Widget build(BuildContext context) {
-    return Container();
+            // Columna para tutores
+            Container(
+              height: MediaQuery.of(context).size.height - 100,
+              width: MediaQuery.of(context).size.width / 2,
+              padding: EdgeInsets.all(20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  // Filtro
+                  SizedBox(
+                    width: 100,
+                    // height: 100,
+                    child: TextField(
+                      decoration: InputDecoration(),
+                      enabled: true,
+                      onSubmitted: (value) {
+                        setState(() {
+                          widget.filtroEstudiante = value;
+                        });
+                      },
+                    ),
+                  ),
+                  // Tabla
+                  FutureBuilder(
+                    future: widget.servicio
+                        .listarUsuariosFiltroRol(UserRoles.padre),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        var dataset = (widget.filtroTutor == null)
+                            ? snapshot.data
+                            : snapshot.data!.where((element) => element.nombre
+                                .toLowerCase()
+                                .contains(widget.filtroTutor!.toLowerCase()));
+                        if (dataset != null && dataset.isNotEmpty) {
+                          return DataTable(
+                            showCheckboxColumn: true,
+                            onSelectAll: (value) {
+                              setState(() {
+                                widget.tutorSeleccionado = null;
+                              });
+                            },
+                            columns: const [
+                              DataColumn(label: Text('Nombre')),
+                              DataColumn(label: Text('Correo')),
+                              DataColumn(label: Text('UID')),
+                            ],
+                            rows: dataset
+                                .map(
+                                  (e) => DataRow(
+                                    selected:
+                                        widget.tutorSeleccionado?.uid == e.uid,
+                                    onSelectChanged: (value) {
+                                      setState(() {
+                                        widget.tutorSeleccionado = e;
+                                      });
+                                      print(widget.tutorSeleccionado);
+                                    },
+                                    cells: [
+                                      DataCell(Text(e.nombre)),
+                                      DataCell(Text(e.correo)),
+                                      DataCell(Text(e.uid)),
+                                    ],
+                                  ),
+                                )
+                                .toList(),
+                          );
+                        } else {
+                          return Text('No se encontraron datos para mostrar');
+                        }
+                      } else if (snapshot.connectionState ==
+                          ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      } else {
+                        return const Text('Error');
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        TextButton(
+          onPressed: () async {
+            if (widget.estudianteSeleccionado != null &&
+                widget.tutorSeleccionado != null) {
+              var response = await widget.servicio.asignarHijo(
+                widget.tutorSeleccionado!,
+                widget.estudianteSeleccionado!,
+              );
+              print('Respuesta creacion: $response');
+            }
+          },
+          child: Text('Asignar hijo-tutor'),
+        ),
+      ],
+    );
   }
 }
