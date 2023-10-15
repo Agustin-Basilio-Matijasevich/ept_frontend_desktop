@@ -146,8 +146,8 @@ class Welcome extends StatelessWidget {
         ];
       case UserRoles.estudiante:
         return [
-          profile,
           header,
+          profile,
           Seccion(context, 'Horarios', Horarios(), Icons.watch_later_outlined),
           Seccion(context, 'Boletin', Boletin(), Icons.grade),
         ];

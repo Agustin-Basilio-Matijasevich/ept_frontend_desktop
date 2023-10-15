@@ -153,9 +153,7 @@ class FormularioState extends State<Formulario> {
           ),
           _gap(),
           DropdownMenu<UserRoles>(
-            width: MediaQuery.of(context).size.width > 600
-                ? 600
-                : MediaQuery.of(context).size.width,
+            width: MediaQuery.of(context).size.width / 2,
             onSelected: (UserRoles? value) {
               setState(() {
                 this.rol = value;

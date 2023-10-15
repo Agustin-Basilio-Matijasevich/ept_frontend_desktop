@@ -22,6 +22,7 @@ class ListadoCursos extends StatelessWidget {
 class GrillaCursos extends StatefulWidget {
   GrillaCursos({super.key});
   final servicio = BusinessData();
+  String textoFiltro = '';
 
   @override
   State<GrillaCursos> createState() => GrillaCursosState();
@@ -30,49 +31,61 @@ class GrillaCursos extends StatefulWidget {
 class GrillaCursosState extends State<GrillaCursos> {
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: widget.servicio.getCursos(),
-      builder: (context, snapshot) {
-        print('Iniciando builder');
-        if (snapshot.connectionState == ConnectionState.done) {
-          print('Conexion finalizada');
-          if (snapshot.data!.isEmpty) {
-            print('Datos vacios');
-            return Icon(Icons.cancel_presentation_sharp);
-          } else {
-            print('Cargando tabla');
-            return DataTable(
-              columns: const [
-                DataColumn(label: Text('Nombre')),
-                DataColumn(label: Text('Dia de la semana')),
-                DataColumn(label: Text('Hora de inicio')),
-                DataColumn(label: Text('Hora de fin')),
-                DataColumn(label: Text('Aula')),
-              ],
-              rows: snapshot.data!.map(
-                (e) {
-                  return DataRow(cells: [
-                    DataCell(Text(e.nombre)),
-                    DataCell(Text(e.dia.name)),
-                    DataCell(Text(
-                        '${e.horainicio.hour}:${e.horainicio.minute.toString().padLeft(2, '0')}')),
-                    DataCell(Text(
-                        '${e.horafin.hour}:${e.horafin.minute.toString().padLeft(2, '0')}')),
-                    DataCell(Text(e.aula)),
-                  ]);
-                },
-              ).toList(),
-            );
-          }
-        } else {
-          print(snapshot.connectionState);
-          return const SizedBox(
-            height: 32,
-            width: 32,
-            child: CircularProgressIndicator(),
-          );
-        }
-      },
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        TextField(
+          onSubmitted: (value) {
+            setState(() {
+              widget.textoFiltro = value;
+            });
+          },
+        ),
+        FutureBuilder(
+          future: widget.servicio.getCursos(),
+          builder: (context, snapshot) {
+            print('Iniciando builder');
+            if (snapshot.connectionState == ConnectionState.done) {
+              print('Conexion finalizada');
+              if (snapshot.data!.isEmpty) {
+                print('Datos vacios');
+                return Icon(Icons.cancel_presentation_sharp);
+              } else {
+                print('Cargando tabla');
+                return DataTable(
+                  columns: const [
+                    DataColumn(label: Text('Nombre')),
+                    DataColumn(label: Text('Dia de la semana')),
+                    DataColumn(label: Text('Hora de inicio')),
+                    DataColumn(label: Text('Hora de fin')),
+                    DataColumn(label: Text('Aula')),
+                  ],
+                  rows: snapshot.data!.map(
+                    (e) {
+                      return DataRow(cells: [
+                        DataCell(Text(e.nombre)),
+                        DataCell(Text(e.dia.name)),
+                        DataCell(Text(
+                            '${e.horainicio.hour}:${e.horainicio.minute.toString().padLeft(2, '0')}')),
+                        DataCell(Text(
+                            '${e.horafin.hour}:${e.horafin.minute.toString().padLeft(2, '0')}')),
+                        DataCell(Text(e.aula)),
+                      ]);
+                    },
+                  ).toList(),
+                );
+              }
+            } else {
+              print(snapshot.connectionState);
+              return const SizedBox(
+                height: 32,
+                width: 32,
+                child: CircularProgressIndicator(),
+              );
+            }
+          },
+        ),
+      ],
     );
   }
 }

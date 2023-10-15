@@ -1,6 +1,8 @@
+import 'package:ept_frontend/models/nota.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../models/curso.dart';
 import '../models/usuario.dart';
 import '../services/businessdata.dart';
 
@@ -100,6 +102,7 @@ class GrillaBoletin extends StatefulWidget {
     super.key,
     required this.estudiante,
   });
+  final servicio = BusinessData();
 
   @override
   State<GrillaBoletin> createState() => _GrillaBoletinState();
@@ -109,10 +112,60 @@ class _GrillaBoletinState extends State<GrillaBoletin> {
   @override
   Widget build(BuildContext context) {
     if (widget.estudiante == null) {
-      return Text('Usted no tiene hijos asociados actualmente');
+      return Text('No se encontraron estudiantes para mostrar');
     } else {
-      final servicio = BusinessData();
-      return Container();
+      return FutureBuilder(
+        future: widget.servicio.getNotasPorCurso(widget.estudiante!, 2023),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.data!.isNotEmpty) {
+              var columns = [
+                DataColumn(label: Text('Cursos')),
+                DataColumn(label: Text('1er trimestre')),
+                DataColumn(label: Text('2do trimestre')),
+                DataColumn(label: Text('3er cuatrimestre')),
+                DataColumn(label: Text('Promedio')),
+              ];
+
+              var rows = <DataRow>[];
+              // Itera por curso
+              for (var curso in snapshot.data!.keys) {
+                var nombreCurso = curso.nombre;
+                var notas = <Nota>[];
+                for (int i = 0;
+                    i < 3 && i < snapshot.data![curso]!.length;
+                    i++) {
+                  notas.add(snapshot.data![curso]![i]);
+                }
+
+                var promedio;
+
+                rows.add(
+                  DataRow(
+                    cells: [
+                      DataCell(Text(curso.nombre)),
+                      DataCell(Text(
+                          (notas[0] != null) ? notas[0].nota.toString() : '')),
+                      DataCell(Text(
+                          (notas[1] != null) ? notas[1].nota.toString() : '')),
+                      DataCell(Text(
+                          (notas[2] != null) ? notas[2].nota.toString() : '')),
+                    ],
+                  ),
+                );
+              }
+
+              return DataTable(columns: columns, rows: rows);
+            } else {
+              return Text('No se encontraron datos para mostrar');
+            }
+          } else if (snapshot.connectionState == ConnectionState.waiting) {
+            return CircularProgressIndicator();
+          } else {
+            return Text('Ocurrio un error :(');
+          }
+        },
+      );
       // return FutureBuilder(future: servicio.getCursos(widget.estudiante));
     }
   }

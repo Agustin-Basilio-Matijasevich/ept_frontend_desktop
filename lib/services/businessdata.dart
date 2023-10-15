@@ -12,19 +12,20 @@ class BusinessData {
 
   //Para mi (Usa si te sirve)
   Future<UserRoles?> getUserRol(String uid) async {
-    try
-    {
-      Map<String, dynamic>? usuario = await _db.collection("usuarios").doc(uid).get().then((value) => value.map);
+    try {
+      Map<String, dynamic>? usuario = await _db
+          .collection("usuarios")
+          .doc(uid)
+          .get()
+          .then((value) => value.map);
 
-      if (usuario == null)
-      {
+      if (usuario == null) {
         throw Exception("Documento Vacio");
       }
 
-      return UserRoles.values.firstWhere((element) => element.toString() == usuario['rol']);
-    }
-    catch (e)
-    {
+      return UserRoles.values
+          .firstWhere((element) => element.toString() == usuario['rol']);
+    } catch (e) {
       print("Error obteniendo rol de usuario. Exeption: $e");
       return null;
     }
@@ -46,7 +47,7 @@ class BusinessData {
 
   Future<Curso?> getCurso(String nombre) async {
     DocRef documento = _db.collection("cursos").doc(nombre);
-    Map<String,dynamic>? json;
+    Map<String, dynamic>? json;
 
     try {
       json = await documento.get().then((value) => value.map);
@@ -59,66 +60,56 @@ class BusinessData {
     }
 
     return Curso.fromJson(json);
-
   }
 
   double calcularDeuda(Pago? pago) {
-
-    if (pago == null)
-      {
-        return 15000;
-      }
+    if (pago == null) {
+      return 15000;
+    }
 
     double pagofinal = 0;
     const double cuota = 10000;
     final DateTime fechapago = pago.fecha;
     final DateTime fechaact = DateTime.now();
 
-    if (fechapago.month == fechaact.month)
-      {
-        return 0;
-      }
-    else
-      {
-        int mesesatraso = (fechaact.month - fechapago.month) - 1;
+    if (fechapago.month == fechaact.month) {
+      return 0;
+    } else {
+      int mesesatraso = (fechaact.month - fechapago.month) - 1;
 
-        for (int i = 0; i < mesesatraso; i++)
-          {
-            pagofinal += cuota * 1.2;
-          }
-
-        if (fechaact.day > 15)
-          {
-            pagofinal += cuota * 1.1;
-          }
-        else
-          {
-            pagofinal += cuota;
-          }
-
-        return pagofinal;
-
+      for (int i = 0; i < mesesatraso; i++) {
+        pagofinal += cuota * 1.2;
       }
 
+      if (fechaact.day > 15) {
+        pagofinal += cuota * 1.1;
+      } else {
+        pagofinal += cuota;
+      }
+
+      return pagofinal;
+    }
   }
 
   Future<Pago?> getUltPago(String uid) async {
-    try
-    {
-      List<DocumentSnapshotForAll<Map<String, Object?>>> documentos = await _db.collection('usuarios').doc(uid).collection('pagos').orderBy('fecha', descending: true).limit(1).get().then((value) => value.docs);
+    try {
+      List<DocumentSnapshotForAll<Map<String, Object?>>> documentos = await _db
+          .collection('usuarios')
+          .doc(uid)
+          .collection('pagos')
+          .orderBy('fecha', descending: true)
+          .limit(1)
+          .get()
+          .then((value) => value.docs);
 
-      Map<String,dynamic>? pago = documentos.first.map;
+      Map<String, dynamic>? pago = documentos.first.map;
 
-      if (pago == null)
-        {
-          throw Exception('No tiene Pagos Realizados.');
-        }
+      if (pago == null) {
+        throw Exception('No tiene Pagos Realizados.');
+      }
 
       return Pago.fromJson(pago);
-
-    }
-    catch (e)
-    {
+    } catch (e) {
       print("Error al recuperar ultimo Pago. Exeption: $e");
       return null;
     }
@@ -127,48 +118,41 @@ class BusinessData {
   Future<bool> esDeudor(String uid) async {
     Pago? pago = await getUltPago(uid);
 
-    if (pago != null)
-      {
-        if (pago.fecha.month == DateTime.now().month)
-          {
-            return false;
-          }
-        else
-          {
-            return true;
-          }
-      }
-    else
-      {
+    if (pago != null) {
+      if (pago.fecha.month == DateTime.now().month) {
+        return false;
+      } else {
         return true;
       }
-
-  }
-
-  Future<bool> esHijo (String padre, String hijo) async {
-
-    try
-    {
-      await _db.collection("usuarios").doc(padre).collection("hijos").doc(hijo).get();
-      await _db.collection("usuarios").doc(hijo).collection("padres").doc(padre).get();
+    } else {
       return true;
     }
-    catch (e)
-    {
+  }
+
+  Future<bool> esHijo(String padre, String hijo) async {
+    try {
+      await _db
+          .collection("usuarios")
+          .doc(padre)
+          .collection("hijos")
+          .doc(hijo)
+          .get();
+      await _db
+          .collection("usuarios")
+          .doc(hijo)
+          .collection("padres")
+          .doc(padre)
+          .get();
+      return true;
+    } catch (e) {
       return false;
     }
   }
 
-
-
-
-
   //Para vos Master Carter Estos Metodos Jamas Fallan
   Future<bool> crearCurso(Curso curso) async {
-
     //Validaciones de Negocio
-    if (null != await getCurso(curso.nombre))
-    {
+    if (null != await getCurso(curso.nombre)) {
       print("El curso ya existe.");
       return false;
     }
@@ -176,12 +160,9 @@ class BusinessData {
     //Tarea
     DocRef documento = _db.collection("cursos").doc(curso.nombre);
 
-    try
-    {
+    try {
       await documento.set(curso.toJson());
-    }
-    catch (e)
-    {
+    } catch (e) {
       print("Error grabando curso en la BD. Exeption: $e");
       return false;
     }
@@ -190,25 +171,22 @@ class BusinessData {
   }
 
   Future<bool> pagar(Usuario usuario, Pago pago) async {
-
     //validaciones Negocio
-    if (await getUserRol(usuario.uid) != UserRoles.estudiante || !await esDeudor(usuario.uid))
-      {
-        print("El usuario no es estudiante o no es deudor.");
-        return false;
-      }
+    if (await getUserRol(usuario.uid) != UserRoles.estudiante ||
+        !await esDeudor(usuario.uid)) {
+      print("El usuario no es estudiante o no es deudor.");
+      return false;
+    }
 
     //Tarea
-    ColRef coleccion = _db.collection("usuarios").doc(usuario.uid).collection("pagos");
+    ColRef coleccion =
+        _db.collection("usuarios").doc(usuario.uid).collection("pagos");
 
     Map<String, dynamic> json = pago.toJson();
 
-    try
-    {
+    try {
       await coleccion.add(json);
-    }
-    catch (e)
-    {
+    } catch (e) {
       print("Error grabando Pago. Exeption: $e");
       return false;
     }
@@ -228,7 +206,12 @@ class BusinessData {
     }
 
     //Tarea
-    ColRef coleccion = _db.collection("usuarios").doc(usuario.uid).collection("cursos").doc(curso.nombre).collection("notas");
+    ColRef coleccion = _db
+        .collection("usuarios")
+        .doc(usuario.uid)
+        .collection("cursos")
+        .doc(curso.nombre)
+        .collection("notas");
 
     Map<String, dynamic> json = nota.toJson();
 
@@ -262,7 +245,11 @@ class BusinessData {
     }
 
     //Tarea
-    DocRef documento = _db.collection("usuarios").doc(usuario.uid).collection("cursos").doc(curso.nombre);
+    DocRef documento = _db
+        .collection("usuarios")
+        .doc(usuario.uid)
+        .collection("cursos")
+        .doc(curso.nombre);
 
     try {
       await documento.set({});
@@ -275,25 +262,32 @@ class BusinessData {
   }
 
   Future<bool> asignarHijo(Usuario padre, Usuario hijo) async {
-
     //Validaciones Negocio
     UserRoles? rolpadre = await getUserRol(padre.uid);
     UserRoles? rolhijo = await getUserRol(hijo.uid);
 
     if (rolpadre != UserRoles.padre || rolhijo != UserRoles.estudiante) {
-      print("El padre debe ser un usuario de tipo padre y el hijo debe ser estudiante");
+      print(
+          "El padre debe ser un usuario de tipo padre y el hijo debe ser estudiante");
       return false;
     }
 
-    if (await esHijo(padre.uid, hijo.uid))
-      {
-        print("Ya estan vinculados como padre e hijo");
-        return false;
-      }
+    if (await esHijo(padre.uid, hijo.uid)) {
+      print("Ya estan vinculados como padre e hijo");
+      return false;
+    }
 
     //Tarea
-    DocRef documento1 = _db.collection("usuarios").doc(padre.uid).collection("hijos").doc(hijo.uid);
-    DocRef documento2 = _db.collection("usuarios").doc(hijo.uid).collection("padres").doc(padre.uid);
+    DocRef documento1 = _db
+        .collection("usuarios")
+        .doc(padre.uid)
+        .collection("hijos")
+        .doc(hijo.uid);
+    DocRef documento2 = _db
+        .collection("usuarios")
+        .doc(hijo.uid)
+        .collection("padres")
+        .doc(padre.uid);
 
     try {
       await documento1.set({});
@@ -310,58 +304,46 @@ class BusinessData {
     return calcularDeuda(await getUltPago(estudiante.uid));
   }
 
-
-
-
   //Listadores
   Future<List<Curso>> getCursos() async {
     List<DocumentSnapshotForAll<Map<String, Object?>>> documentos;
     List<Curso> cursos = [];
 
-    try
-    {
-      documentos = await _db.collection('cursos').get().then((value) => value.docs);
-    }
-    catch (e)
-    {
+    try {
+      documentos =
+          await _db.collection('cursos').get().then((value) => value.docs);
+    } catch (e) {
       print("No se pudieron obtener los cursos de la DB. Exeption: $e");
       return [];
     }
 
     for (var element in documentos) {
-      Map<String,dynamic>? json = element.map;
+      Map<String, dynamic>? json = element.map;
 
-      if (json != null)
-        {
-          Curso? curso = Curso.fromJson(json);
+      if (json != null) {
+        Curso? curso = Curso.fromJson(json);
 
-          if (curso != null)
-            {
-              cursos.add(curso);
-            }
-
+        if (curso != null) {
+          cursos.add(curso);
         }
-
+      }
     }
 
     return cursos;
-
   }
 
   //Lista todos los usuarios que deben y te los devuelve con el monto de la deuda
   Future<List<Map<Usuario, double>>> listarDeudores() async {
-    List<Usuario> usuarios = await listarUsuariosFiltroRol(UserRoles.estudiante);
+    List<Usuario> usuarios =
+        await listarUsuariosFiltroRol(UserRoles.estudiante);
     List<Map<Usuario, double>> deudores = [];
 
-    for (var usuario in usuarios)
-      {
-        double deuda = await getDeuda(usuario);
-        if (deuda > 0)
-        {
-          deudores.add({usuario:deuda});
-        }
-
+    for (var usuario in usuarios) {
+      double deuda = await getDeuda(usuario);
+      if (deuda > 0) {
+        deudores.add({usuario: deuda});
       }
+    }
 
     return deudores;
   }
@@ -371,33 +353,26 @@ class BusinessData {
     List<Usuario> usuarios = [];
     List<DocumentSnapshotForAll<Map<String, Object?>>> documentos;
 
-    try
-    {
-      documentos = await _db.collection('usuarios').get().then((value) => value.docs);
-    }
-    catch (e)
-    {
+    try {
+      documentos =
+          await _db.collection('usuarios').get().then((value) => value.docs);
+    } catch (e) {
       print("Error obteniendo usuarios de DB. Exeption: $e");
       return [];
     }
 
-    for (var documento in documentos)
-      {
-        Map<String,dynamic>? json = documento.map;
+    for (var documento in documentos) {
+      Map<String, dynamic>? json = documento.map;
 
-        if (json != null)
-          {
-            json['uid'] = documento.id;
-            Usuario? usuario = Usuario.fromJson(json);
+      if (json != null) {
+        json['uid'] = documento.id;
+        Usuario? usuario = Usuario.fromJson(json);
 
-            if (usuario != null)
-              {
-                usuarios.add(usuario);
-              }
-
-          }
-
+        if (usuario != null) {
+          usuarios.add(usuario);
+        }
       }
+    }
 
     return usuarios;
   }
@@ -406,32 +381,28 @@ class BusinessData {
     List<Usuario> usuarios = [];
     List<DocumentSnapshotForAll<Map<String, Object?>>> documentos;
 
-    try
-    {
-      documentos = await _db.collection('usuarios').where('rol', isEqualTo: rol.toString()).get().then((value) => value.docs);
-    }
-    catch (e)
-    {
+    try {
+      documentos = await _db
+          .collection('usuarios')
+          .where('rol', isEqualTo: rol.toString())
+          .get()
+          .then((value) => value.docs);
+    } catch (e) {
       print("Error obteniendo usuarios de DB. Exeption: $e");
       return [];
     }
 
-    for (var documento in documentos)
-    {
-      Map<String,dynamic>? json = documento.map;
+    for (var documento in documentos) {
+      Map<String, dynamic>? json = documento.map;
 
-      if (json != null)
-      {
+      if (json != null) {
         json['uid'] = documento.id;
         Usuario? usuario = Usuario.fromJson(json);
 
-        if (usuario != null)
-        {
+        if (usuario != null) {
           usuarios.add(usuario);
         }
-
       }
-
     }
 
     return usuarios;
@@ -439,70 +410,68 @@ class BusinessData {
 
   Future<List<Usuario>> listarAlumnosPorCurso(Curso curso) async {
     List<Usuario> retorno = [];
-    List<Usuario> estudiantes = await listarUsuariosFiltroRol(UserRoles.estudiante);
+    List<Usuario> estudiantes =
+        await listarUsuariosFiltroRol(UserRoles.estudiante);
 
-    for (var estudiante in estudiantes)
-      {
-        if (await esCursoyUsuario(estudiante.uid, curso.nombre))
-          {
-            retorno.add(estudiante);
-          }
+    for (var estudiante in estudiantes) {
+      if (await esCursoyUsuario(estudiante.uid, curso.nombre)) {
+        retorno.add(estudiante);
       }
+    }
 
     return retorno;
   }
 
-  Future<List<Map<Curso,List<Usuario>>>> listarAlumnosPorCursoFull() async {
-    List<Map<Curso,List<Usuario>>> retorno = [];
+  Future<List<Map<Curso, List<Usuario>>>> listarAlumnosPorCursoFull() async {
+    List<Map<Curso, List<Usuario>>> retorno = [];
     List<Curso> cursos = await getCursos();
 
-    for (var curso in cursos)
-      {
-        List<Usuario> cursantes = await listarAlumnosPorCurso(curso);
-        if (cursantes.isNotEmpty)
-          {
-            retorno.add({curso:cursantes});
-          }
+    for (var curso in cursos) {
+      List<Usuario> cursantes = await listarAlumnosPorCurso(curso);
+      if (cursantes.isNotEmpty) {
+        retorno.add({curso: cursantes});
       }
+    }
 
     return retorno;
   }
 
-  Future<Map<Curso, List<Nota>>> getNotasPorCurso(Usuario usuario, int anio) async {
-
-
+  Future<Map<Curso, List<Nota>>> getNotasPorCurso(
+      Usuario usuario, int anio) async {
     return {};
   }
 
   //Pasame el padre y te devuelvo los hijos
   Future<List<Usuario>> getHijos(Usuario padre) async {
-
     List<Usuario> hijos = [];
     List<DocumentSnapshotForAll<Map<String, Object?>>> documentos;
 
-    try
-    {
-      documentos = await _db.collection('usuarios').doc(padre.uid).collection('hijos').get().then((value) => value.docs);
-    }
-    catch (e)
-    {
+    try {
+      documentos = await _db
+          .collection('usuarios')
+          .doc(padre.uid)
+          .collection('hijos')
+          .get()
+          .then((value) => value.docs);
+    } catch (e) {
       print("No tiene hijos vinculados. Exeption: $e");
       return [];
     }
 
-    for (var documento in documentos)
-      {
-        Map<String,dynamic>? json = await _db.collection('usuarios').doc(documento.id).get().then((value) => value.map);
-        if (json != null)
-          {
-            json['uid'] = documento.id;
-            Usuario? hijo = Usuario.fromJson(json);
-            if (hijo != null)
-              {
-                hijos.add(hijo);
-              }
-          }
+    for (var documento in documentos) {
+      Map<String, dynamic>? json = await _db
+          .collection('usuarios')
+          .doc(documento.id)
+          .get()
+          .then((value) => value.map);
+      if (json != null) {
+        json['uid'] = documento.id;
+        Usuario? hijo = Usuario.fromJson(json);
+        if (hijo != null) {
+          hijos.add(hijo);
+        }
       }
+    }
 
     return hijos;
   }
@@ -511,25 +480,28 @@ class BusinessData {
     List<Usuario> padres = [];
     List<DocumentSnapshotForAll<Map<String, Object?>>> documentos;
 
-    try
-    {
-      documentos = await _db.collection('usuarios').doc(hijo.uid).collection('padres').get().then((value) => value.docs);
-    }
-    catch (e)
-    {
+    try {
+      documentos = await _db
+          .collection('usuarios')
+          .doc(hijo.uid)
+          .collection('padres')
+          .get()
+          .then((value) => value.docs);
+    } catch (e) {
       print("No tiene padres vinculados. Exeption: $e");
       return [];
     }
 
-    for (var documento in documentos)
-    {
-      Map<String,dynamic>? json = await _db.collection('usuarios').doc(documento.id).get().then((value) => value.map);
-      if (json != null)
-      {
+    for (var documento in documentos) {
+      Map<String, dynamic>? json = await _db
+          .collection('usuarios')
+          .doc(documento.id)
+          .get()
+          .then((value) => value.map);
+      if (json != null) {
         json['uid'] = documento.id;
         Usuario? padre = Usuario.fromJson(json);
-        if (padre != null)
-        {
+        if (padre != null) {
           padres.add(padre);
         }
       }
@@ -538,5 +510,17 @@ class BusinessData {
     return padres;
   }
 
-
+  Future<List<Curso>>? getCursosPorUsuario(Usuario usuario) {
+    switch (usuario.rol) {
+      case UserRoles.estudiante:
+        // Traer los cursos del estudiante
+        return null;
+      case UserRoles.docente:
+        // Traer los cursos del docente
+        return null;
+      default:
+        // Lanzar exception
+        throw (ArgumentError());
+    }
+  }
 }
