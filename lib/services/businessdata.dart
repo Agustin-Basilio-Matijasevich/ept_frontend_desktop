@@ -1,10 +1,8 @@
 import 'package:ept_frontend/models/nota.dart';
 import 'package:ept_frontend/models/pago.dart';
 import 'package:ept_frontend/models/usuario.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_for_all/firebase_for_all.dart';
 import 'package:ept_frontend/models/curso.dart';
-import 'package:flutter/material.dart';
 
 class BusinessData {
   final FirestoreItem _db =
@@ -131,7 +129,7 @@ class BusinessData {
 
     if (pago != null)
       {
-        if (pago!.fecha.month == DateTime.now().month)
+        if (pago.fecha.month == DateTime.now().month)
           {
             return false;
           }
@@ -471,19 +469,73 @@ class BusinessData {
   }
 
   Future<Map<Curso, List<Nota>>> getNotasPorCurso(Usuario usuario, int anio) async {
-    
+
 
     return {};
   }
 
-
-
-
-  //Usar Try pueden dar exeption
-
-  //Pasame el padre y te devuelvo los hijos, ahi vas a poder buscar notas y deudas, fijate si necesitas la vuelta
+  //Pasame el padre y te devuelvo los hijos
   Future<List<Usuario>> getHijos(Usuario padre) async {
-    return [];
+
+    List<Usuario> hijos = [];
+    List<DocumentSnapshotForAll<Map<String, Object?>>> documentos;
+
+    try
+    {
+      documentos = await _db.collection('usuarios').doc(padre.uid).collection('hijos').get().then((value) => value.docs);
+    }
+    catch (e)
+    {
+      print("No tiene hijos vinculados. Exeption: $e");
+      return [];
+    }
+
+    for (var documento in documentos)
+      {
+        Map<String,dynamic>? json = await _db.collection('usuarios').doc(documento.id).get().then((value) => value.map);
+        if (json != null)
+          {
+            json['uid'] = documento.id;
+            Usuario? hijo = Usuario.fromJson(json);
+            if (hijo != null)
+              {
+                hijos.add(hijo);
+              }
+          }
+      }
+
+    return hijos;
+  }
+
+  Future<List<Usuario>> getPadres(Usuario hijo) async {
+    List<Usuario> padres = [];
+    List<DocumentSnapshotForAll<Map<String, Object?>>> documentos;
+
+    try
+    {
+      documentos = await _db.collection('usuarios').doc(hijo.uid).collection('padres').get().then((value) => value.docs);
+    }
+    catch (e)
+    {
+      print("No tiene padres vinculados. Exeption: $e");
+      return [];
+    }
+
+    for (var documento in documentos)
+    {
+      Map<String,dynamic>? json = await _db.collection('usuarios').doc(documento.id).get().then((value) => value.map);
+      if (json != null)
+      {
+        json['uid'] = documento.id;
+        Usuario? padre = Usuario.fromJson(json);
+        if (padre != null)
+        {
+          padres.add(padre);
+        }
+      }
+    }
+
+    return padres;
   }
 
 
