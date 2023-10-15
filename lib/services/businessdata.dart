@@ -352,19 +352,17 @@ class BusinessData {
 
   //Lista todos los usuarios que deben y te los devuelve con el monto de la deuda
   Future<List<Map<Usuario, double>>> listarDeudores() async {
-    List<Usuario> usuarios = await listarUsuarios();
+    List<Usuario> usuarios = await listarUsuariosFiltroRol(UserRoles.estudiante);
     List<Map<Usuario, double>> deudores = [];
 
     for (var usuario in usuarios)
       {
-        if (usuario.rol == UserRoles.estudiante)
-          {
-            double deuda = await getDeuda(usuario);
-            if (deuda > 0)
-              {
-                deudores.add({usuario:deuda});
-              }
-          }
+        double deuda = await getDeuda(usuario);
+        if (deuda > 0)
+        {
+          deudores.add({usuario:deuda});
+        }
+
       }
 
     return deudores;
@@ -406,20 +404,87 @@ class BusinessData {
     return usuarios;
   }
 
+  Future<List<Usuario>> listarUsuariosFiltroRol(UserRoles rol) async {
+    List<Usuario> usuarios = [];
+    List<DocumentSnapshotForAll<Map<String, Object?>>> documentos;
 
+    try
+    {
+      documentos = await _db.collection('usuarios').where('rol', isEqualTo: rol.toString()).get().then((value) => value.docs);
+    }
+    catch (e)
+    {
+      print("Error obteniendo usuarios de DB. Exeption: $e");
+      return [];
+    }
 
-  //Guarda que estos si revientan ponele un try pue
-  Future<List<Usuario>> listarAlumnosPorCurso(Curso curso) async {
-    return [];
+    for (var documento in documentos)
+    {
+      Map<String,dynamic>? json = documento.map;
+
+      if (json != null)
+      {
+        json['uid'] = documento.id;
+        Usuario? usuario = Usuario.fromJson(json);
+
+        if (usuario != null)
+        {
+          usuarios.add(usuario);
+        }
+
+      }
+
+    }
+
+    return usuarios;
   }
+
+  Future<List<Usuario>> listarAlumnosPorCurso(Curso curso) async {
+    List<Usuario> retorno = [];
+    List<Usuario> estudiantes = await listarUsuariosFiltroRol(UserRoles.estudiante);
+
+    for (var estudiante in estudiantes)
+      {
+        if (await esCursoyUsuario(estudiante.uid, curso.nombre))
+          {
+            retorno.add(estudiante);
+          }
+      }
+
+    return retorno;
+  }
+
+  Future<List<Map<Curso,List<Usuario>>>> listarAlumnosPorCursoFull() async {
+    List<Map<Curso,List<Usuario>>> retorno = [];
+    List<Curso> cursos = await getCursos();
+
+    for (var curso in cursos)
+      {
+        List<Usuario> cursantes = await listarAlumnosPorCurso(curso);
+        if (cursantes.isNotEmpty)
+          {
+            retorno.add({curso:cursantes});
+          }
+      }
+
+    return retorno;
+  }
+
+  Future<Map<Curso, List<Nota>>> getNotasPorCurso(Usuario usuario, int anio) async {
+    
+
+    return {};
+  }
+
+
+
+
+  //Usar Try pueden dar exeption
 
   //Pasame el padre y te devuelvo los hijos, ahi vas a poder buscar notas y deudas, fijate si necesitas la vuelta
   Future<List<Usuario>> getHijos(Usuario padre) async {
     return [];
   }
 
-  Future<Map<Curso, List<Nota>>> getNotasPorCurso(
-      Usuario usuario, int anio) async {
-    return {};
-  }
+
 }
