@@ -358,7 +358,7 @@ class BusinessData {
 
     if (await esCursoyUsuario(usuario.uid, curso.nombre)) {
       print("El curso ya esta vinculado al usuario");
-      return false;
+      return true;
     }
 
     //Tarea
@@ -392,7 +392,7 @@ class BusinessData {
 
     if (await esHijo(padre.uid, hijo.uid)) {
       print("Ya estan vinculados como padre e hijo");
-      return false;
+      return true;
     }
 
     //Tarea
