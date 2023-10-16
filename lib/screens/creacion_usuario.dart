@@ -175,6 +175,8 @@ class FormularioState extends State<Formulario> {
                 case UserRoles.docente:
                   label = 'Docente';
                   break;
+                default:
+                  break;
               }
               return DropdownMenuEntry<UserRoles>(
                 value: value,
@@ -249,8 +251,6 @@ class FormularioState extends State<Formulario> {
                     );
                   }
                 }
-
-                //Falta vformKeyficar por las cuentas guardadas en firebase.
               },
             ),
           ),

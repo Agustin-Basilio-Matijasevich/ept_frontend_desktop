@@ -24,7 +24,7 @@ class Perfil extends StatelessWidget {
       );
     } else {
       imagenusr = Image.network(
-        usuario!.foto,
+        usuario.foto,
         width: 256,
         height: 256,
       );
@@ -148,7 +148,7 @@ class Perfil extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           'Nombre: ',
                           style: TextStyle(
                             fontSize: 28,
@@ -156,8 +156,8 @@ class Perfil extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          usuario!.nombre,
-                          style: TextStyle(
+                          usuario.nombre,
+                          style: const TextStyle(
                             fontSize: 24,
                           ),
                         ),
@@ -169,15 +169,15 @@ class Perfil extends StatelessWidget {
               Container(
                 padding: EdgeInsets.fromLTRB(0, 50, 0, 0),
                 child: TextButton(
-                  child: Text('Cambiar contraseña'),
                   style: ButtonStyle(
                     textStyle: MaterialStateProperty.all(
-                      TextStyle(
+                      const TextStyle(
                         fontSize: 24,
                       ),
                     ),
                   ),
                   onPressed: () {},
+                  child: const Text('Cambiar contraseña'),
                 ),
               ),
             ],

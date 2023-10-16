@@ -1,5 +1,7 @@
 import 'package:ept_frontend/screens/asignacion_tutor.dart';
-import 'package:ept_frontend/screens/horarios.dart';
+import 'package:ept_frontend/screens/boletin_estudiante.dart';
+import 'package:ept_frontend/screens/horarios_estudiante.dart';
+import 'package:ept_frontend/screens/horarios_tutor.dart';
 import 'package:ept_frontend/screens/pago_cuotas.dart';
 import 'package:ept_frontend/screens/perfil.dart';
 import 'package:ept_frontend/widgets/footer.dart';
@@ -9,8 +11,9 @@ import 'package:provider/provider.dart';
 
 import '../models/usuario.dart';
 import 'alumnos.dart';
-import 'aulas.dart';
-import 'boletin.dart';
+import 'asignacion_docentes.dart';
+import 'asignacion_estudiantes.dart';
+import 'boletin_tutor.dart';
 import 'creacion_curso.dart';
 import 'creacion_usuario.dart';
 import 'deudores.dart';
@@ -142,23 +145,26 @@ class Welcome extends StatelessWidget {
           header,
           profile,
           Seccion(context, 'Lista de alumnos', Alumnos(), Icons.list),
-          Seccion(context, 'Horarios', Horarios(), Icons.watch_later_outlined),
+          Seccion(
+              context, 'Horarios', HorariosTutor(), Icons.watch_later_outlined),
           Seccion(context, 'Carga de notas', Notas(), Icons.grade),
         ];
       case UserRoles.estudiante:
         return [
           header,
           profile,
-          Seccion(context, 'Horarios', Horarios(), Icons.watch_later_outlined),
-          Seccion(context, 'Boletin', Boletin(), Icons.grade),
+          Seccion(context, 'Horarios', HorariosEstudiante(),
+              Icons.watch_later_outlined),
+          Seccion(context, 'Boletin', BoletinEstudiante(), Icons.grade),
         ];
       case UserRoles.padre:
         return [
           header,
           profile,
           Seccion(context, 'Pago de cuotas', PagoCuotas(), Icons.receipt),
-          Seccion(context, 'Horarios', Horarios(), Icons.watch_later_outlined),
-          Seccion(context, 'Boletin', Boletin(), Icons.grade),
+          Seccion(
+              context, 'Horarios', HorariosTutor(), Icons.watch_later_outlined),
+          Seccion(context, 'Boletin', BoletinTutor(), Icons.grade),
         ];
       case UserRoles.nodocente:
         return [
@@ -166,8 +172,12 @@ class Welcome extends StatelessWidget {
           profile,
           Seccion(context, 'Deudores', Deudores(), Icons.money_off),
           Seccion(context, 'Alumnos', Alumnos(), Icons.school),
-          Seccion(context, 'Horarios', Horarios(), Icons.watch_later_outlined),
-          Seccion(context, 'Asignación de aulas', Aulas(), Icons.room),
+          // Seccion(
+          //     context, 'Horarios', HorariosTutor(), Icons.watch_later_outlined),
+          Seccion(context, 'Asignación de estudiantes', AsignacionEstudiantes(),
+              Icons.room),
+          Seccion(context, 'Asignación de docentes', AsignacionDocentes(),
+              Icons.room),
           Seccion(context, 'Asignacion de tutores', AsignacionTutor(),
               Icons.people),
           Seccion(context, 'Creación de Usuarios', CreacionUsuario(),

@@ -10,7 +10,7 @@ class AsignacionTutor extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(title: const Text('Asignacion de tutores')),
       body: Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
@@ -48,7 +48,7 @@ class _ContenidoState extends State<Contenido> {
             Container(
               height: MediaQuery.of(context).size.height - 100,
               width: MediaQuery.of(context).size.width / 2,
-              padding: EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
@@ -57,7 +57,9 @@ class _ContenidoState extends State<Contenido> {
                     width: 100,
                     // height: 100,
                     child: TextField(
-                      decoration: InputDecoration(),
+                      decoration:
+                          const InputDecoration(hintText: 'Filtrar por nombre'),
+                      autocorrect: false,
                       enabled: true,
                       onSubmitted: (value) {
                         setState(() {
@@ -71,7 +73,7 @@ class _ContenidoState extends State<Contenido> {
                     future: widget.servicio
                         .listarUsuariosFiltroRol(UserRoles.estudiante),
                     builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.done) {
+                      if (snapshot.data != null && snapshot.data!.isNotEmpty) {
                         var dataset = (widget.filtroEstudiante == null)
                             ? snapshot.data
                             : snapshot.data!.where((element) => element.nombre
@@ -113,13 +115,18 @@ class _ContenidoState extends State<Contenido> {
                                 .toList(),
                           );
                         } else {
-                          return Text('No se encontraron datos para mostrar');
+                          return const Text(
+                              'No se encontraron datos para mostrar');
                         }
+                      } else if (snapshot.data != null &&
+                          snapshot.data!.isEmpty) {
+                        return const Text(
+                            'No se encontraron datos para mostrar');
                       } else if (snapshot.connectionState ==
                           ConnectionState.waiting) {
                         return const CircularProgressIndicator();
                       } else {
-                        return const Text('Error');
+                        return const Text('Ocurrio un error :(');
                       }
                     },
                   ),
@@ -140,7 +147,9 @@ class _ContenidoState extends State<Contenido> {
                     width: 100,
                     // height: 100,
                     child: TextField(
-                      decoration: InputDecoration(),
+                      decoration:
+                          const InputDecoration(hintText: 'Filtrar por nombre'),
+                      autocorrect: false,
                       enabled: true,
                       onSubmitted: (value) {
                         setState(() {
@@ -154,13 +163,13 @@ class _ContenidoState extends State<Contenido> {
                     future: widget.servicio
                         .listarUsuariosFiltroRol(UserRoles.padre),
                     builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.done) {
+                      if (snapshot.data != null && snapshot.data!.isNotEmpty) {
                         var dataset = (widget.filtroTutor == null)
                             ? snapshot.data
                             : snapshot.data!.where((element) => element.nombre
                                 .toLowerCase()
                                 .contains(widget.filtroTutor!.toLowerCase()));
-                        if (dataset != null && dataset.isNotEmpty) {
+                        if (dataset!.isNotEmpty) {
                           return DataTable(
                             showCheckboxColumn: true,
                             onSelectAll: (value) {
@@ -194,8 +203,13 @@ class _ContenidoState extends State<Contenido> {
                                 .toList(),
                           );
                         } else {
-                          return Text('No se encontraron datos para mostrar');
+                          return const Text(
+                              'No se encontraron usuarios con ese nombre');
                         }
+                      } else if (snapshot.data != null &&
+                          snapshot.data!.isEmpty) {
+                        return const Text(
+                            'No se encontraron datos para mostrar');
                       } else if (snapshot.connectionState ==
                           ConnectionState.waiting) {
                         return const CircularProgressIndicator();
@@ -210,6 +224,11 @@ class _ContenidoState extends State<Contenido> {
           ],
         ),
         TextButton(
+          style: const ButtonStyle(
+            backgroundColor: MaterialStatePropertyAll(Colors.blue),
+            foregroundColor: MaterialStatePropertyAll(Colors.white),
+            textStyle: MaterialStatePropertyAll(TextStyle(fontSize: 24)),
+          ),
           onPressed: () async {
             if (widget.estudianteSeleccionado != null &&
                 widget.tutorSeleccionado != null) {
@@ -220,7 +239,7 @@ class _ContenidoState extends State<Contenido> {
               print('Respuesta creacion: $response');
             }
           },
-          child: Text('Asignar hijo-tutor'),
+          child: const Text('Asignar hijo-tutor'),
         ),
       ],
     );
