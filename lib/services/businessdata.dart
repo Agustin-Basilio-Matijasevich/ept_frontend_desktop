@@ -149,6 +149,136 @@ class BusinessData {
     }
   }
 
+  Future<List<Nota>> getNotas (String usuario, String curso) async {
+    List<DocumentSnapshotForAll<Map<String, Object?>>> documentos;
+    List<Nota> notas = [];
+
+    try {
+      documentos = await _db.collection('usuarios').doc(usuario).collection('cursos').doc(curso).collection('notas').orderBy('fecha', descending: false).get().then((value) => value.docs);
+    } catch (e) {
+      print("No se pudieron obtener las Notas de la DB. Exeption: $e");
+      return [];
+    }
+
+    for (var element in documentos)
+    {
+      Map<String, dynamic>? json = element.map;
+
+      if (json != null)
+      {
+        Nota? nota = Nota.fromJson(json);
+
+        if (nota != null)
+        {
+          notas.add(nota);
+        }
+      }
+    }
+
+    return notas;
+
+  }
+
+  Future<List<Nota>> getNotasFiltroAnio (String usuario, String curso, int anio) async {
+    List<Nota> notas = await getNotas(usuario, curso);
+    List<Nota> retorno = [];
+
+    for (var element in notas)
+    {
+      if (element.fecha.year == anio)
+      {
+        retorno.add(element);
+      }
+    }
+
+    return retorno;
+
+  }
+
+  List<int?> calcularPromedioTrimestral (List<Nota> notas, int anio){
+    DateTime inicioPrimerTrimestre = DateTime.utc(anio,3,20);
+    DateTime finPrimerTrimestre = DateTime.utc(anio,6,2);
+    DateTime inicioSegundoTrimestre = DateTime.utc(anio,6,5);
+    DateTime finSegundoTrimestre = DateTime.utc(anio,9,1);
+    DateTime inicioTercerTrimestre = DateTime.utc(anio,9,4);
+    DateTime finTTercerTrimestre = DateTime.utc(anio,11,24);
+    List<Nota> primerTrimestre = [];
+    List<Nota> segundoTrimestre = [];
+    List<Nota> tercerTrimestre = [];
+    int suma;
+    List<int?> retorno = [];
+
+    for (var nota in notas)
+      {
+        DateTime fechaNota = DateTime.utc(anio,nota.fecha.month,nota.fecha.day);
+        if (fechaNota.isAfter(inicioPrimerTrimestre) && fechaNota.isBefore(finPrimerTrimestre))
+          {
+            primerTrimestre.add(nota);
+          }
+        else if (fechaNota.isAfter(inicioSegundoTrimestre) && fechaNota.isBefore(finSegundoTrimestre))
+          {
+            segundoTrimestre.add(nota);
+          }
+        else if (fechaNota.isAfter(inicioTercerTrimestre) && fechaNota.isBefore(finTTercerTrimestre))
+          {
+            tercerTrimestre.add(nota);
+          }
+      }
+
+    suma = 0;
+
+    for (var nota in primerTrimestre)
+      {
+        suma += nota.nota;
+      }
+
+    if (suma == 0)
+      {
+        retorno[0] = null;
+      }
+    else
+      {
+        retorno[0] = (suma/primerTrimestre.length).round();
+      }
+
+    suma = 0;
+
+    for (var nota in segundoTrimestre)
+      {
+        suma += nota.nota;
+      }
+
+    if (suma == 0)
+      {
+        retorno[1] = null;
+      }
+    else
+      {
+        retorno[1] = (suma/segundoTrimestre.length).round();
+      }
+
+    suma = 0;
+
+    for (var nota in tercerTrimestre)
+      {
+        suma += nota.nota;
+      }
+
+    if (suma == 0)
+      {
+        retorno[2] = null;
+      }
+    else
+      {
+        retorno[2] = (suma/tercerTrimestre.length).round();
+      }
+
+    return retorno;
+
+  }
+
+
+
   //Para vos Master Carter Estos Metodos Jamas Fallan
   Future<bool> crearCurso(Curso curso) async {
     //Validaciones de Negocio
@@ -438,9 +568,20 @@ class BusinessData {
     return retorno;
   }
 
-  Future<Map<Curso, List<Nota>>> getNotasPorCurso(
-      Usuario usuario, int anio) async {
-    return {};
+  //Por cada curso devuelve 3 notas que son promedio de las notas del trimestre ordenadas por trimerstre, indice 0,1,2. Las notas van en formato entero
+  //Si no tengo notas de un trimestre devuelvo null en la nota.
+  //Las notas que se usan para calcular son las del año indicado.
+  //Si no tengo ningun curso para el usuario, lista vacia.
+  Future<List<Map<Curso, List<int?>>>> getPromedioPorCurso(Usuario usuario, int anio) async {
+    List<Curso> cursos = await getCursosPorUsuario(usuario);
+    List<Map<Curso,List<int?>>> retorno = [];
+
+    for (var curso in cursos)
+      {
+        retorno.add({curso:calcularPromedioTrimestral(await getNotasFiltroAnio(usuario.uid, curso.nombre, anio), anio)});
+      }
+
+    return retorno;
   }
 
   //Pasame el padre y te devuelvo los hijos
