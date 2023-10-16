@@ -11,11 +11,12 @@ class Deudores extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Deudores'),
+        title: const Text('Deudores'),
       ),
       body: Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
+        alignment: Alignment.topCenter,
         child: TablaDeudores(),
       ),
     );
@@ -40,9 +41,9 @@ class _TablaDeudoresState extends State<TablaDeudores> {
     var dataset = <_fila>[];
 
     for (var deudor in estudianteDeuda) {
-      var alumno = deudor.keys.first;
-      var deuda = deudor.values.first;
-      var tutor;
+      Usuario alumno = deudor.keys.first;
+      double deuda = deudor.values.first;
+      Usuario? tutor;
       try {
         tutor = await servicio.getPadres(alumno).then((value) => value.first);
       } catch (e) {
@@ -79,11 +80,11 @@ class _TablaDeudoresState extends State<TablaDeudores> {
               }).toList(),
             );
           }
-          return Text('No hay deudores para mostrar');
+          return const Text('No hay deudores para mostrar');
         } else {
           return Container(
-            child: CircularProgressIndicator(),
             alignment: Alignment.center,
+            child: const CircularProgressIndicator(),
           );
         }
       },

@@ -13,7 +13,7 @@ class CreacionUsuario extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Creación de usuario'),
+        title: const Text('Creación de usuario'),
       ),
       body: Container(
         width: MediaQuery.of(context).size.width,
@@ -41,7 +41,7 @@ class FormularioState extends State<Formulario> {
   bool esVisible = false;
   String? email = '';
   String? password = '';
-  UserRoles? rol = null;
+  UserRoles? rol;
   String? nombre = '';
   String? error = '';
 
@@ -226,10 +226,12 @@ class FormularioState extends State<Formulario> {
                         );
                       },
                     );
-                    email = '';
-                    password = '';
-                    rol = null;
-                    nombre = '';
+                    setState(() {
+                      email = '';
+                      password = '';
+                      rol = null;
+                      nombre = '';
+                    });
                   } else {
                     showDialog(
                       context: navigatorKey.currentContext!,

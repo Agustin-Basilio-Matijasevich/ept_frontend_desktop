@@ -11,13 +11,13 @@ class AsignacionEstudiantes extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Asignacion de estudiantes'),
+        title: const Text('Asignacion de estudiantes'),
       ),
       body: Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         alignment: Alignment.topCenter,
-        child: Contenido(),
+        child: const Contenido(),
       ),
     );
   }
@@ -53,8 +53,8 @@ class _ContenidoState extends State<Contenido> {
             Column(
               children: [
                 Container(
-                  padding: EdgeInsets.all(20),
-                  child: Text('Seleccione un estudiante'),
+                  padding: const EdgeInsets.all(20),
+                  child: const Text('Seleccione un estudiante'),
                 ),
                 Container(
                   width: MediaQuery.of(context).size.width / 2,
@@ -94,7 +94,7 @@ class _ContenidoState extends State<Contenido> {
                               .toList(),
                         );
                       } else {
-                        return Text('No se encontraron estudiantes');
+                        return const Text('No se encontraron estudiantes');
                       }
                     },
                   ),
@@ -104,8 +104,8 @@ class _ContenidoState extends State<Contenido> {
             Column(
               children: [
                 Container(
-                  padding: EdgeInsets.all(20),
-                  child: Text('Seleccione varios cursos'),
+                  padding: const EdgeInsets.all(20),
+                  child: const Text('Seleccione varios cursos'),
                 ),
                 Container(
                   width: MediaQuery.of(context).size.width / 2,
@@ -158,9 +158,9 @@ class _ContenidoState extends State<Contenido> {
                       } else {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
-                          return CircularProgressIndicator();
+                          return const CircularProgressIndicator();
                         } else {
-                          return Text('No se encontraron cursos');
+                          return const Text('No se encontraron cursos');
                         }
                       }
                     },
@@ -189,12 +189,12 @@ class _ContenidoState extends State<Contenido> {
                 showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
-                    title: Text('Asignacion de curso'),
-                    content:
-                        Text('Se asignaron los cursos al usuario con exito'),
+                    title: const Text('Asignacion de curso'),
+                    content: const Text(
+                        'Se asignaron los cursos al usuario con exito'),
                     actions: [
                       TextButton(
-                        child: Text('Aceptar'),
+                        child: const Text('Aceptar'),
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
@@ -206,12 +206,12 @@ class _ContenidoState extends State<Contenido> {
                 showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
-                    title: Text('Asignacion de curso'),
-                    content:
-                        Text('Ocurrio un error en la asignacion de cursos'),
+                    title: const Text('Asignacion de curso'),
+                    content: const Text(
+                        'Ocurrio un error en la asignacion de cursos'),
                     actions: [
                       TextButton(
-                        child: Text('Aceptar'),
+                        child: const Text('Aceptar'),
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
@@ -223,8 +223,8 @@ class _ContenidoState extends State<Contenido> {
             }
           },
           child: Container(
-            padding: EdgeInsets.all(10),
-            child: Text('Asignar estudiante'),
+            padding: const EdgeInsets.all(10),
+            child: const Text('Asignar estudiante'),
           ),
         ),
       ],

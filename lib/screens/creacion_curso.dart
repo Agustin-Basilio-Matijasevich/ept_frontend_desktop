@@ -44,8 +44,8 @@ class FormularioState extends State<Formulario> {
   String? nombre = '';
   String? aula = '';
   DiaSemana? diaSemana;
-  TimeOfDay? horaInicio = null;
-  TimeOfDay? horaFin = null;
+  TimeOfDay? horaInicio;
+  TimeOfDay? horaFin;
 
   String? emailValidator(String? email) {
     // validacion email
@@ -61,8 +61,11 @@ class FormularioState extends State<Formulario> {
     return null;
   }
 
+  final nombreController = TextEditingController();
+  final aulaController = TextEditingController();
   final horaInicioController = TextEditingController();
   final horaFinController = TextEditingController();
+  final diaController = TextEditingController();
 
   final AuthService auth = AuthService();
   final BusinessData business = BusinessData();
@@ -79,6 +82,7 @@ class FormularioState extends State<Formulario> {
         children: [
           // Nombre
           TextFormField(
+            controller: nombreController,
             validator: (String? value) {
               if (value != null) {
                 setState(() {
@@ -102,6 +106,7 @@ class FormularioState extends State<Formulario> {
           _gap(),
           // Aula
           TextFormField(
+            controller: aulaController,
             autovalidateMode: AutovalidateMode.onUserInteraction,
             validator: (String? value) {
               final formatoAula = RegExp(r'^[A-Z]+\-[0-9]$');
@@ -129,6 +134,7 @@ class FormularioState extends State<Formulario> {
           // Dia de cursado
           DropdownMenu<DiaSemana>(
             width: MediaQuery.of(context).size.width / 2,
+            controller: diaController,
             onSelected: (DiaSemana? value) {
               setState(() {
                 this.diaSemana = value;
@@ -179,7 +185,7 @@ class FormularioState extends State<Formulario> {
                 initialEntryMode: TimePickerEntryMode.input,
               );
               horaInicioController.text =
-                  '${timePicked?.hour}:${timePicked?.minute}';
+                  '${timePicked?.hour}:${timePicked?.minute.toString().padLeft(2, '0')}';
               setState(() => horaInicio = timePicked);
             },
           ),
@@ -201,7 +207,7 @@ class FormularioState extends State<Formulario> {
                 initialEntryMode: TimePickerEntryMode.input,
               );
               horaFinController.text =
-                  '${timePicked?.hour}:${timePicked?.minute}';
+                  '${timePicked?.hour}:${timePicked?.minute.toString().padLeft(2, '0')}';
               setState(() => horaFin = timePicked);
             },
           ),
@@ -222,14 +228,14 @@ class FormularioState extends State<Formulario> {
                 ),
               ),
               onPressed: () async {
-                final bool formSent = await business.crearCurso(Curso(
-                  this.nombre!,
-                  this.diaSemana!,
-                  this.horaInicio!,
-                  this.horaFin!,
-                  this.aula!,
-                ));
                 if (_formKey.currentState!.validate()) {
+                  final bool formSent = await business.crearCurso(Curso(
+                    this.nombre!,
+                    this.diaSemana!,
+                    this.horaInicio!,
+                    this.horaFin!,
+                    this.aula!,
+                  ));
                   if (formSent) {
                     showDialog(
                       context: navigatorKey.currentContext!,
@@ -248,7 +254,18 @@ class FormularioState extends State<Formulario> {
                         );
                       },
                     );
-                    this.nombre = '';
+                    setState(() {
+                      nombre = '';
+                      diaSemana = null;
+                      horaInicio = null;
+                      horaFin = null;
+                      aula = '';
+                      nombreController.text = '';
+                      diaController.text = '';
+                      horaInicioController.text = '';
+                      horaFinController.text = '';
+                      aulaController.text = '';
+                    });
                   } else {
                     showDialog(
                       context: navigatorKey.currentContext!,

@@ -138,7 +138,7 @@ class _ContenidoState extends State<Contenido> {
             Container(
               height: MediaQuery.of(context).size.height - 100,
               width: MediaQuery.of(context).size.width / 2,
-              padding: EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [

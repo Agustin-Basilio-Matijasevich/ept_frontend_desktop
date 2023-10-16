@@ -47,7 +47,7 @@ class _ContenidoState extends State<Contenido> {
           builder: (context, snapshot) {
             print(snapshot.connectionState);
             if (snapshot.data != null && snapshot.data!.isNotEmpty) {
-              return Container(
+              return SizedBox(
                 child: DropdownMenu<Usuario>(
                   label: (usuarioSeleccionado != null)
                       ? Text(usuarioSeleccionado!.nombre)
