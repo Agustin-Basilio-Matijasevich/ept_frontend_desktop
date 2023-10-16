@@ -290,8 +290,9 @@ class BusinessData {
         .doc(padre.uid);
 
     try {
-      await documento1.set({});
-      await documento2.set({});
+      Map<String,Object?> vacio = {};
+      await documento1.set(vacio);
+      await documento2.set(vacio);
     } catch (e) {
       print("Error asignando hijos. Exeption: $e");
       return false;
