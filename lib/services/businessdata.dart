@@ -512,17 +512,30 @@ class BusinessData {
     return padres;
   }
 
-  Future<List<Curso>>? getCursosPorUsuario(Usuario usuario) {
-    switch (usuario.rol) {
-      case UserRoles.estudiante:
-        // Traer los cursos del estudiante
-        return null;
-      case UserRoles.docente:
-        // Traer los cursos del docente
-        return null;
-      default:
-        // Lanzar exception
-        throw (ArgumentError());
+  Future<List<Curso>> getCursosPorUsuario(Usuario usuario) async {
+    List<Curso> cursos = [];
+    List<DocumentSnapshotForAll<Map<String, Object?>>> documentos;
+
+    try
+    {
+      documentos = await _db.collection('usuarios').doc(usuario.uid).collection('cursos').get().then((value) => value.docs);
     }
+    catch (e)
+    {
+      print("No tiene cursos vinculados. Exeption: $e");
+      return [];
+    }
+
+    for (var documento in documentos)
+      {
+        Curso? curso = await getCurso(documento.id);
+        if (curso != null)
+          {
+            cursos.add(curso);
+          }
+      }
+
+    return cursos;
+
   }
 }
