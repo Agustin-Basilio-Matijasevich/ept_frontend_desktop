@@ -252,7 +252,8 @@ class BusinessData {
         .doc(curso.nombre);
 
     try {
-      await documento.set({});
+      Map<String,Object?> vacio = {};
+      await documento.set(vacio);
     } catch (e) {
       print("Error adiriendo curso al usuario. Exeption: $e");
       return false;
