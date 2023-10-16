@@ -1,8 +1,11 @@
+import 'dart:io';
+import 'package:ept_frontend/models/formulario_inscripcion.dart';
 import 'package:ept_frontend/models/nota.dart';
 import 'package:ept_frontend/models/pago.dart';
 import 'package:ept_frontend/models/usuario.dart';
 import 'package:firebase_for_all/firebase_for_all.dart';
 import 'package:ept_frontend/models/curso.dart';
+import 'package:ept_frontend/models/noticia.dart';
 
 class BusinessData {
   final FirestoreItem _db =
@@ -672,4 +675,154 @@ class BusinessData {
 
     return cursos;
   }
+
+  Future<List<Map<String,FormInscripcion>>> getFormulariosInscripcion () async {
+    List<DocumentSnapshotForAll<Map<String, Object?>>> documentos;
+    List<Map<String,FormInscripcion>> formularios = [];
+
+    try
+    {
+      documentos = await _db.collection('formularios_inscripcion').get().then((value) => value.docs);
+    }
+    catch (e)
+    {
+      print("No hay formularios. Exeption: $e");
+      return [];
+    }
+
+    for (var documento in documentos)
+      {
+        Map<String,dynamic>? json = documento.map;
+
+        if (json != null)
+          {
+            FormInscripcion? formulario = FormInscripcion.fromJson(json);
+
+            if (formulario != null)
+              {
+                formularios.add({documento.id:formulario});
+              }
+
+          }
+
+      }
+
+    return formularios;
+
+  }
+
+  Future<bool> borrarFormularioInscripcion(String id) async {
+    try
+    {
+      await _db.collection('formularios_inscripcion').doc(id).delete();
+      return true;
+    }
+    catch (e)
+    {
+      print("Error borrando formulario de inscripcion. Exeption: $e");
+      return false;
+    }
+  }
+
+  Future<List<Map<String,Noticia>>> getNoticias() async {
+    List<DocumentSnapshotForAll<Map<String, Object?>>> documentos;
+    List<Map<String,Noticia>> noticias = [];
+
+    try
+    {
+      documentos = await _db.collection('noticias').get().then((value) => value.docs);
+    }
+    catch (e)
+    {
+      print("No hay noticias. Exeption: $e");
+      return [];
+    }
+
+    for (var documento in documentos)
+    {
+      Map<String,dynamic>? json = documento.map;
+
+      if (json != null)
+      {
+        Noticia? noticia = Noticia.fromJson(json);
+
+        if (noticia != null)
+        {
+          noticias.add({documento.id:noticia});
+        }
+
+      }
+
+    }
+
+    return noticias;
+
+  }
+
+  Future<bool> borrarNoticia(String id) async {
+    try
+    {
+      await _db.collection('noticias').doc(id).delete();
+      return true;
+    }
+    catch (e)
+    {
+      print("Error borrando Noticia. Exeption: $e");
+      return false;
+    }
+  }
+
+  Future<bool> cargarNoticia(String titulo, String contenido, String autor, File? imagen) async {
+    Map<String,dynamic> nuevanoticia = {'titulo':titulo,'contenido':contenido,'autor':autor,'imagen':''};
+    DocRef nuevodocumento;
+
+    try
+    {
+      nuevodocumento = await _db.collection('noticias').add(nuevanoticia);
+    }
+    catch (e)
+    {
+      print("Error cargando nueva noticia. Exeption: $e");
+      return false;
+    }
+
+    if (imagen != null)
+      {
+        try
+        {
+          StorageRef rutaImg = _cloud.child("noticiasdata").child(await nuevodocumento.get().then((value) => value.id)).child("newimage.png");
+          UploadTaskForAll subida = rutaImg.putFile(imagen);
+
+          while(true)
+          {
+            await for (ProcessTask event in subida.snapshotEvents)
+            {
+              if (event.state == TaskState.success)
+              {
+                await nuevodocumento.update({'imagen':rutaImg.getDownloadURL()});
+                return true;
+              }
+              else if (event.state == TaskState.running)
+              {
+                //Esperar
+              }
+              else
+              {
+                print("Error Subiendo Imagen");
+                return false;
+              }
+            }
+          }
+        }
+        catch (e)
+        {
+          print("Error Grabando la Imagen. Exeption: $e");
+          return false;
+        }
+      }
+
+    return true;
+
+  }
+
 }
