@@ -221,7 +221,7 @@ class _CompanyDescription extends StatelessWidget {
       padding: const EdgeInsetsDirectional.fromSTEB(80, 0, 0, 0),
       child: Text(
         "¡Bienvenido ${usuario?.nombre} \nal sistema de gestión de\neducar para trasformar!",
-        softWrap: true,        
+        softWrap: true,
         textAlign: esPantallaChica ? TextAlign.center : TextAlign.left,
         style: esPantallaChica
             ? const TextStyle(

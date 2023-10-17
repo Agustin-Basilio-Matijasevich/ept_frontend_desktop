@@ -5,7 +5,7 @@ import '../models/curso.dart';
 import '../models/usuario.dart';
 
 class AsignacionEstudiantes extends StatelessWidget {
-  AsignacionEstudiantes({Key? key}) : super(key: key);
+  const AsignacionEstudiantes({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

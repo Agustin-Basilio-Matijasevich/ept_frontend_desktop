@@ -15,14 +15,14 @@ class AsignacionTutor extends StatelessWidget {
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         alignment: Alignment.topCenter,
-        child: Contenido(),
+        child: const Contenido(),
       ),
     );
   }
 }
 
 class Contenido extends StatefulWidget {
-  Contenido({super.key});
+  const Contenido({super.key});
 
   @override
   State<Contenido> createState() => _ContenidoState();

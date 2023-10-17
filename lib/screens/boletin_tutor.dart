@@ -7,7 +7,7 @@ import '../models/usuario.dart';
 import '../services/businessdata.dart';
 
 class BoletinTutor extends StatelessWidget {
-  BoletinTutor({Key? key}) : super(key: key);
+  const BoletinTutor({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

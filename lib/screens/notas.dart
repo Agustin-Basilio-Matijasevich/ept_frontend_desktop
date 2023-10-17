@@ -8,7 +8,7 @@ import '../models/curso.dart';
 import '../models/usuario.dart';
 
 class Notas extends StatelessWidget {
-  Notas({Key? key}) : super(key: key);
+  const Notas({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -89,9 +89,9 @@ class _GrillaNotasState extends State<GrillaNotas> {
                     'No se encontraron cursos asociados al profesor'),
               );
             } else if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator();
+              return const CircularProgressIndicator();
             } else {
-              return Text('Ocurrio un error');
+              return const Text('Ocurrio un error');
             }
           },
         ),
@@ -99,7 +99,7 @@ class _GrillaNotasState extends State<GrillaNotas> {
           future: servicio.listarAlumnosPorCurso(cursoSeleccionado),
           builder: (context, snapshot) {
             if (cursoSeleccionado == null) {
-              return SizedBox();
+              return const SizedBox();
             } else if (snapshot.data != null && snapshot.data!.isNotEmpty) {
               return Container(
                 width: MediaQuery.of(context).size.width / 2,

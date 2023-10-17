@@ -5,26 +5,26 @@ import '../models/usuario.dart';
 import '../services/businessdata.dart';
 
 class HorariosTutor extends StatelessWidget {
-  HorariosTutor({Key? key}) : super(key: key);
+  const HorariosTutor({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Horarios'),
+        title: const Text('Horarios'),
       ),
       body: Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         alignment: Alignment.topCenter,
-        child: GrillaHorarios(),
+        child: const GrillaHorarios(),
       ),
     );
   }
 }
 
 class GrillaHorarios extends StatefulWidget {
-  GrillaHorarios({super.key});
+  const GrillaHorarios({super.key});
 
   @override
   State<GrillaHorarios> createState() => GrillaHorariosState();
@@ -55,11 +55,11 @@ class GrillaHorariosState extends State<GrillaHorarios> {
                     .toList(),
               );
             } else if (snapshot.data != null && snapshot.data!.isEmpty) {
-              return Text('No se encontraron hijos para mostrar');
+              return const Text('No se encontraron hijos para mostrar');
             } else if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator();
+              return const CircularProgressIndicator();
             } else {
-              return Text('Ocurrio un error');
+              return const Text('Ocurrio un error');
             }
           },
         ),
@@ -90,11 +90,11 @@ class GrillaHorariosState extends State<GrillaHorarios> {
                     .toList(),
               );
             } else if (snapshot.data != null && snapshot.data!.isEmpty) {
-              return Text('No se encontraron datos para mostrar');
+              return const Text('No se encontraron datos para mostrar');
             } else if (snapshot.connectionState == ConnectionState.active) {
-              return CircularProgressIndicator();
+              return const CircularProgressIndicator();
             } else {
-              return Text('Ocurrio un error');
+              return const Text('Ocurrio un error');
             }
           },
         )

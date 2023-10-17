@@ -8,7 +8,7 @@ import '../models/usuario.dart';
 import '../services/auth.dart';
 
 class Perfil extends StatelessWidget {
-  Perfil({Key? key}) : super(key: key);
+  const Perfil({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

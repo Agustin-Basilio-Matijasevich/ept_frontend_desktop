@@ -15,13 +15,13 @@ class ListadoCursos extends StatelessWidget {
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
           alignment: Alignment.topCenter,
-          child: GrillaCursos()),
+          child: const GrillaCursos()),
     );
   }
 }
 
 class GrillaCursos extends StatefulWidget {
-  GrillaCursos({super.key});
+  const GrillaCursos({super.key});
 
   @override
   State<GrillaCursos> createState() => GrillaCursosState();

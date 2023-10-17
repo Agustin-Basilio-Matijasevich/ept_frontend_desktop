@@ -2,7 +2,7 @@
 
 import 'package:ept_frontend/main.dart';
 import 'package:ept_frontend/models/curso.dart';
-import 'package:ept_frontend/models/usuario.dart';
+// import 'package:ept_frontend/models/usuario.dart';
 import 'package:flutter/material.dart';
 
 import '../services/auth.dart';
@@ -15,7 +15,7 @@ class CreacionCurso extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Creación de Curso'),
+        title: const Text('Creación de Curso'),
       ),
       body: Container(
         height: MediaQuery.of(context).size.height,

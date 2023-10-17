@@ -6,7 +6,7 @@ import '../services/businessdata.dart';
 
 // PARA ESTUDIANTES Y DOCENTES
 class Horarios extends StatelessWidget {
-  Horarios({Key? key}) : super(key: key);
+  const Horarios({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,14 +18,14 @@ class Horarios extends StatelessWidget {
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         alignment: Alignment.center,
-        child: GrillaHorarios(),
+        child: const GrillaHorarios(),
       ),
     );
   }
 }
 
 class GrillaHorarios extends StatefulWidget {
-  GrillaHorarios({super.key});
+  const GrillaHorarios({super.key});
 
   @override
   State<GrillaHorarios> createState() => GrillaHorariosState();

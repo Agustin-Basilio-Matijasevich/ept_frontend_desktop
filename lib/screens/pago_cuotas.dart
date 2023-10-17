@@ -18,9 +18,14 @@ class PagoCuotas extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Pago de Cuotas'),
       ),
-      body: PagoCuotasContenido(
-        deudor: deudor,
-        deuda: deuda,
+      body: Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        alignment: Alignment.center,
+        child: PagoCuotasContenido(
+          deudor: deudor,
+          deuda: deuda,
+        ),
       ),
     );
   }
@@ -44,6 +49,7 @@ class _PagoCuotasContenidoState extends State<PagoCuotasContenido> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         DropdownMenu<TipoPago>(
           onSelected: (value) {

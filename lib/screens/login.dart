@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:ept_frontend/services/auth.dart';
 
 class Login extends StatelessWidget {
-  Login({Key? key}) : super(key: key);
+  const Login({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -199,7 +199,7 @@ class EstadoContenidoForm extends State<ContenidoForm> {
                                 onPressed: () {
                                   Navigator.of(context).pop();
                                 },
-                                child: Text("Aceptar"),
+                                child: const Text("Aceptar"),
                               ),
                             ],
                           );
