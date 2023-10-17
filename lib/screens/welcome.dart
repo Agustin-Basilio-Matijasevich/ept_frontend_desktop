@@ -1,8 +1,10 @@
 import 'package:ept_frontend/screens/asignacion_tutor.dart';
 import 'package:ept_frontend/screens/boletin_estudiante.dart';
+import 'package:ept_frontend/screens/deuda.dart';
 import 'package:ept_frontend/screens/horarios_estudiante.dart';
 import 'package:ept_frontend/screens/horarios_tutor.dart';
-import 'package:ept_frontend/screens/pago_cuotas.dart';
+import 'package:ept_frontend/screens/listado_estudiantes.dart';
+// import 'package:ept_frontend/screens/pago_cuotas.dart';
 import 'package:ept_frontend/screens/perfil.dart';
 import 'package:ept_frontend/widgets/footer.dart';
 import 'package:ept_frontend/widgets/login_button.dart';
@@ -10,7 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../models/usuario.dart';
-import 'alumnos.dart';
 import 'asignacion_docentes.dart';
 import 'asignacion_estudiantes.dart';
 import 'boletin_tutor.dart';
@@ -22,20 +23,13 @@ import 'listado_usuarios.dart';
 import 'notas.dart';
 
 class Welcome extends StatelessWidget {
-  Welcome({super.key});
+  const Welcome({super.key});
 
   @override
   Widget build(BuildContext context) {
     bool esPantallaChica = MediaQuery.of(context).size.width < 600;
     final usuario = Provider.of<Usuario?>(context);
 
-    Widget _gap() => SizedBox(
-          width: MediaQuery.of(context).size.width,
-          height: 42.0,
-          child: const DecoratedBox(
-            decoration: BoxDecoration(color: Colors.blue),
-          ),
-        );
     return Scaffold(
       appBar: AppBar(
         title: Text('Bienvenido a Educar Para Trasformar',
@@ -51,7 +45,7 @@ class Welcome extends StatelessWidget {
       ),
       drawer: Drawer(
         child: ListView(
-          children: SeccionesAccesibles(context, usuario!),
+          children: seccionesAccesibles(context, usuario!),
         ),
       ),
       body: LayoutBuilder(
@@ -106,7 +100,7 @@ class Welcome extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         const _Logo(),
-                        Container(
+                        SizedBox(
                           width: MediaQuery.of(context).size.width - 700,
                           child: const _CompanyDescription(),
                         ),
@@ -123,7 +117,7 @@ class Welcome extends StatelessWidget {
     );
   }
 
-  List<Widget> SeccionesAccesibles(BuildContext context, Usuario usuario) {
+  List<Widget> seccionesAccesibles(BuildContext context, Usuario usuario) {
     const header = DrawerHeader(
       decoration: BoxDecoration(
         color: Colors.blue,
@@ -137,56 +131,58 @@ class Welcome extends StatelessWidget {
       ),
     );
 
-    final profile = Seccion(context, 'Perfil', Perfil(), Icons.person);
+    final profile = seccion(context, 'Perfil', const Perfil(), Icons.person);
 
     switch (usuario.rol) {
       case UserRoles.docente:
         return [
           header,
           profile,
-          Seccion(context, 'Lista de alumnos', Alumnos(), Icons.list),
-          Seccion(
-              context, 'Horarios', HorariosTutor(), Icons.watch_later_outlined),
-          Seccion(context, 'Carga de notas', Notas(), Icons.grade),
+          seccion(context, 'Lista de alumnos', const ListadoEstudiantes(),
+              Icons.list),
+          seccion(context, 'Horarios', const Horarios(),
+              Icons.watch_later_outlined),
+          seccion(context, 'Carga de notas', const Notas(), Icons.grade),
         ];
       case UserRoles.estudiante:
         return [
           header,
           profile,
-          Seccion(context, 'Horarios', HorariosEstudiante(),
+          seccion(context, 'Horarios', const Horarios(),
               Icons.watch_later_outlined),
-          Seccion(context, 'Boletin', BoletinEstudiante(), Icons.grade),
+          seccion(context, 'Boletin', const BoletinEstudiante(), Icons.grade),
         ];
       case UserRoles.padre:
         return [
           header,
           profile,
-          Seccion(context, 'Pago de cuotas', PagoCuotas(), Icons.receipt),
-          Seccion(
-              context, 'Horarios', HorariosTutor(), Icons.watch_later_outlined),
-          Seccion(context, 'Boletin', BoletinTutor(), Icons.grade),
+          seccion(context, 'Pago de cuotas', const Deuda(), Icons.receipt),
+          seccion(context, 'Horarios', const HorariosTutor(),
+              Icons.watch_later_outlined),
+          seccion(context, 'Boletin', const BoletinTutor(), Icons.grade),
         ];
       case UserRoles.nodocente:
         return [
           header,
           profile,
-          Seccion(context, 'Deudores', Deudores(), Icons.money_off),
-          Seccion(context, 'Alumnos', Alumnos(), Icons.school),
+          seccion(context, 'Deudores', const Deudores(), Icons.money_off),
+          // Seccion(context, 'Alumnos', Alumnos(), Icons.school),
           // Seccion(
           //     context, 'Horarios', HorariosTutor(), Icons.watch_later_outlined),
-          Seccion(context, 'Asignación de estudiantes', AsignacionEstudiantes(),
+          seccion(context, 'Asignación de estudiantes',
+              const AsignacionEstudiantes(), Icons.room),
+          seccion(context, 'Asignación de docentes', const AsignacionDocentes(),
               Icons.room),
-          Seccion(context, 'Asignación de docentes', AsignacionDocentes(),
-              Icons.room),
-          Seccion(context, 'Asignacion de tutores', AsignacionTutor(),
+          seccion(context, 'Asignacion de tutores', const AsignacionTutor(),
               Icons.people),
-          Seccion(context, 'Creación de Usuarios', CreacionUsuario(),
+          seccion(context, 'Creación de Usuarios', const CreacionUsuario(),
               Icons.people_outline_sharp),
-          Seccion(context, 'Creación de Curso', CreacionCurso(),
+          seccion(context, 'Creación de Curso', const CreacionCurso(),
               Icons.location_pin),
-          Seccion(context, 'Listado de cursos', ListadoCursos(), Icons.list),
-          Seccion(
-              context, 'Listado de usuarios', ListadoUsuarios(), Icons.person),
+          seccion(
+              context, 'Listado de cursos', const ListadoCursos(), Icons.list),
+          seccion(context, 'Listado de usuarios', const ListadoUsuarios(),
+              Icons.person),
         ];
       default:
         return [
@@ -196,7 +192,7 @@ class Welcome extends StatelessWidget {
     }
   }
 
-  ListTile Seccion(BuildContext context, String nombre,
+  ListTile seccion(BuildContext context, String nombre,
       StatelessWidget pantalla, IconData icono) {
     return ListTile(
       leading: Icon(icono),
@@ -214,7 +210,7 @@ class Welcome extends StatelessWidget {
 }
 
 class _CompanyDescription extends StatelessWidget {
-  const _CompanyDescription({super.key});
+  const _CompanyDescription();
 
   @override
   Widget build(BuildContext context) {
@@ -250,7 +246,7 @@ class _CompanyDescription extends StatelessWidget {
 }
 
 class _Logo extends StatelessWidget {
-  const _Logo({super.key});
+  const _Logo();
 
   @override
   Widget build(BuildContext context) {

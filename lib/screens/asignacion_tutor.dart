@@ -5,7 +5,7 @@ import '../services/businessdata.dart';
 
 // Ta enorme esta pantalla :(
 class AsignacionTutor extends StatelessWidget {
-  AsignacionTutor({Key? key}) : super(key: key);
+  const AsignacionTutor({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,17 +23,17 @@ class AsignacionTutor extends StatelessWidget {
 
 class Contenido extends StatefulWidget {
   Contenido({super.key});
-  Usuario? estudianteSeleccionado;
-  String? filtroEstudiante;
-  Usuario? tutorSeleccionado;
-  String? filtroTutor;
-  final servicio = BusinessData();
 
   @override
   State<Contenido> createState() => _ContenidoState();
 }
 
 class _ContenidoState extends State<Contenido> {
+  Usuario? estudianteSeleccionado;
+  String? filtroEstudiante;
+  Usuario? tutorSeleccionado;
+  String? filtroTutor;
+  final servicio = BusinessData();
   @override
   Widget build(BuildContext context) {
     // Fila para mostrar 2 columnas con grilla y filtro de busqueda
@@ -63,29 +63,28 @@ class _ContenidoState extends State<Contenido> {
                       enabled: true,
                       onSubmitted: (value) {
                         setState(() {
-                          widget.filtroEstudiante = value;
+                          filtroEstudiante = value;
                         });
                       },
                     ),
                   ),
                   // Tabla
                   FutureBuilder(
-                    future: widget.servicio
-                        .listarUsuariosFiltroRol(UserRoles.estudiante),
+                    future:
+                        servicio.listarUsuariosFiltroRol(UserRoles.estudiante),
                     builder: (context, snapshot) {
                       if (snapshot.data != null && snapshot.data!.isNotEmpty) {
-                        var dataset = (widget.filtroEstudiante == null)
+                        var dataset = (filtroEstudiante == null)
                             ? snapshot.data
                             : snapshot.data!.where((element) => element.nombre
                                 .toLowerCase()
-                                .contains(
-                                    widget.filtroEstudiante!.toLowerCase()));
+                                .contains(filtroEstudiante!.toLowerCase()));
                         if (dataset != null && dataset.isNotEmpty) {
                           return DataTable(
                             showCheckboxColumn: true,
                             onSelectAll: (value) {
                               setState(() {
-                                widget.estudianteSeleccionado = null;
+                                estudianteSeleccionado = null;
                               });
                             },
                             columns: const [
@@ -97,13 +96,11 @@ class _ContenidoState extends State<Contenido> {
                                 .map(
                                   (e) => DataRow(
                                     selected:
-                                        widget.estudianteSeleccionado?.uid ==
-                                            e.uid,
+                                        estudianteSeleccionado?.uid == e.uid,
                                     onSelectChanged: (value) {
                                       setState(() {
-                                        widget.estudianteSeleccionado = e;
+                                        estudianteSeleccionado = e;
                                       });
-                                      print(widget.estudianteSeleccionado);
                                     },
                                     cells: [
                                       DataCell(Text(e.nombre)),
@@ -153,28 +150,27 @@ class _ContenidoState extends State<Contenido> {
                       enabled: true,
                       onSubmitted: (value) {
                         setState(() {
-                          widget.filtroEstudiante = value;
+                          filtroEstudiante = value;
                         });
                       },
                     ),
                   ),
                   // Tabla
                   FutureBuilder(
-                    future: widget.servicio
-                        .listarUsuariosFiltroRol(UserRoles.padre),
+                    future: servicio.listarUsuariosFiltroRol(UserRoles.padre),
                     builder: (context, snapshot) {
                       if (snapshot.data != null && snapshot.data!.isNotEmpty) {
-                        var dataset = (widget.filtroTutor == null)
+                        var dataset = (filtroTutor == null)
                             ? snapshot.data
                             : snapshot.data!.where((element) => element.nombre
                                 .toLowerCase()
-                                .contains(widget.filtroTutor!.toLowerCase()));
+                                .contains(filtroTutor!.toLowerCase()));
                         if (dataset!.isNotEmpty) {
                           return DataTable(
                             showCheckboxColumn: true,
                             onSelectAll: (value) {
                               setState(() {
-                                widget.tutorSeleccionado = null;
+                                tutorSeleccionado = null;
                               });
                             },
                             columns: const [
@@ -185,13 +181,11 @@ class _ContenidoState extends State<Contenido> {
                             rows: dataset
                                 .map(
                                   (e) => DataRow(
-                                    selected:
-                                        widget.tutorSeleccionado?.uid == e.uid,
+                                    selected: tutorSeleccionado?.uid == e.uid,
                                     onSelectChanged: (value) {
                                       setState(() {
-                                        widget.tutorSeleccionado = e;
+                                        tutorSeleccionado = e;
                                       });
-                                      print(widget.tutorSeleccionado);
                                     },
                                     cells: [
                                       DataCell(Text(e.nombre)),
@@ -229,14 +223,46 @@ class _ContenidoState extends State<Contenido> {
             foregroundColor: MaterialStatePropertyAll(Colors.white),
             textStyle: MaterialStatePropertyAll(TextStyle(fontSize: 24)),
           ),
-          onPressed: () async {
-            if (widget.estudianteSeleccionado != null &&
-                widget.tutorSeleccionado != null) {
-              var response = await widget.servicio.asignarHijo(
-                widget.tutorSeleccionado!,
-                widget.estudianteSeleccionado!,
+          onPressed: () {
+            if (estudianteSeleccionado != null && tutorSeleccionado != null) {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return FutureBuilder(
+                    future: servicio.asignarHijo(
+                        tutorSeleccionado!, estudianteSeleccionado!),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        String mensaje = '';
+                        if (snapshot.data!) {
+                          mensaje = 'Exito en la vinculacion de padre-hijo';
+                        } else {
+                          mensaje = 'Ocurrio un error en la vinculacion';
+                        }
+                        return AlertDialog(
+                          title: const Text('Resultado de vinculacion'),
+                          content: Text(mensaje),
+                          actions: [
+                            TextButton(
+                              child: const Text('Aceptar'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],
+                        );
+                      } else {
+                        return Container(
+                          width: 64,
+                          height: 64,
+                          alignment: Alignment.center,
+                          child: const CircularProgressIndicator(),
+                        );
+                      }
+                    },
+                  );
+                },
               );
-              print('Respuesta creacion: $response');
             }
           },
           child: const Text('Asignar hijo-tutor'),

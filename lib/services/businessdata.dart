@@ -211,7 +211,7 @@ class BusinessData {
     List<Nota> segundoTrimestre = [];
     List<Nota> tercerTrimestre = [];
     int suma;
-    List<int?> retorno = [null,null,null];
+    List<int?> retorno = [null, null, null];
 
     for (var nota in notas) {
       DateTime fechaNota = DateTime.utc(anio, nota.fecha.month, nota.fecha.day);
@@ -564,7 +564,10 @@ class BusinessData {
   //Las notas que se usan para calcular son las del año indicado.
   //Si no tengo ningun curso para el usuario, lista vacia.
   Future<List<Map<Curso, List<int?>>>> getPromedioPorCurso(
-      Usuario usuario, int anio) async {
+      Usuario? usuario, int anio) async {
+    if (usuario == null) {
+      return [];
+    }
     List<Curso> cursos = await getCursosPorUsuario(usuario);
     List<Map<Curso, List<int?>>> retorno = [];
 
@@ -676,153 +679,126 @@ class BusinessData {
     return cursos;
   }
 
-  Future<List<Map<String,FormInscripcion>>> getFormulariosInscripcion () async {
+  Future<List<Map<String, FormInscripcion>>> getFormulariosInscripcion() async {
     List<DocumentSnapshotForAll<Map<String, Object?>>> documentos;
-    List<Map<String,FormInscripcion>> formularios = [];
+    List<Map<String, FormInscripcion>> formularios = [];
 
-    try
-    {
-      documentos = await _db.collection('formularios_inscripcion').get().then((value) => value.docs);
-    }
-    catch (e)
-    {
+    try {
+      documentos = await _db
+          .collection('formularios_inscripcion')
+          .get()
+          .then((value) => value.docs);
+    } catch (e) {
       print("No hay formularios. Exeption: $e");
       return [];
     }
 
-    for (var documento in documentos)
-      {
-        Map<String,dynamic>? json = documento.map;
+    for (var documento in documentos) {
+      Map<String, dynamic>? json = documento.map;
 
-        if (json != null)
-          {
-            FormInscripcion? formulario = FormInscripcion.fromJson(json);
+      if (json != null) {
+        FormInscripcion? formulario = FormInscripcion.fromJson(json);
 
-            if (formulario != null)
-              {
-                formularios.add({documento.id:formulario});
-              }
-
-          }
-
+        if (formulario != null) {
+          formularios.add({documento.id: formulario});
+        }
       }
+    }
 
     return formularios;
-
   }
 
   Future<bool> borrarFormularioInscripcion(String id) async {
-    try
-    {
+    try {
       await _db.collection('formularios_inscripcion').doc(id).delete();
       return true;
-    }
-    catch (e)
-    {
+    } catch (e) {
       print("Error borrando formulario de inscripcion. Exeption: $e");
       return false;
     }
   }
 
-  Future<List<Map<String,Noticia>>> getNoticias() async {
+  Future<List<Map<String, Noticia>>> getNoticias() async {
     List<DocumentSnapshotForAll<Map<String, Object?>>> documentos;
-    List<Map<String,Noticia>> noticias = [];
+    List<Map<String, Noticia>> noticias = [];
 
-    try
-    {
-      documentos = await _db.collection('noticias').get().then((value) => value.docs);
-    }
-    catch (e)
-    {
+    try {
+      documentos =
+          await _db.collection('noticias').get().then((value) => value.docs);
+    } catch (e) {
       print("No hay noticias. Exeption: $e");
       return [];
     }
 
-    for (var documento in documentos)
-    {
-      Map<String,dynamic>? json = documento.map;
+    for (var documento in documentos) {
+      Map<String, dynamic>? json = documento.map;
 
-      if (json != null)
-      {
+      if (json != null) {
         Noticia? noticia = Noticia.fromJson(json);
 
-        if (noticia != null)
-        {
-          noticias.add({documento.id:noticia});
+        if (noticia != null) {
+          noticias.add({documento.id: noticia});
         }
-
       }
-
     }
 
     return noticias;
-
   }
 
   Future<bool> borrarNoticia(String id) async {
-    try
-    {
+    try {
       await _db.collection('noticias').doc(id).delete();
       return true;
-    }
-    catch (e)
-    {
+    } catch (e) {
       print("Error borrando Noticia. Exeption: $e");
       return false;
     }
   }
 
-  Future<bool> cargarNoticia(String titulo, String contenido, String autor, File? imagen) async {
-    Map<String,dynamic> nuevanoticia = {'titulo':titulo,'contenido':contenido,'autor':autor,'imagen':''};
+  Future<bool> cargarNoticia(
+      String titulo, String contenido, String autor, File? imagen) async {
+    Map<String, dynamic> nuevanoticia = {
+      'titulo': titulo,
+      'contenido': contenido,
+      'autor': autor,
+      'imagen': ''
+    };
     DocRef nuevodocumento;
 
-    try
-    {
+    try {
       nuevodocumento = await _db.collection('noticias').add(nuevanoticia);
-    }
-    catch (e)
-    {
+    } catch (e) {
       print("Error cargando nueva noticia. Exeption: $e");
       return false;
     }
 
-    if (imagen != null)
-      {
-        try
-        {
-          StorageRef rutaImg = _cloud.child("noticiasdata").child(await nuevodocumento.get().then((value) => value.id)).child("newimage.png");
-          UploadTaskForAll subida = rutaImg.putFile(imagen);
+    if (imagen != null) {
+      try {
+        StorageRef rutaImg = _cloud
+            .child("noticiasdata")
+            .child(await nuevodocumento.get().then((value) => value.id))
+            .child("newimage.png");
+        UploadTaskForAll subida = rutaImg.putFile(imagen);
 
-          while(true)
-          {
-            await for (ProcessTask event in subida.snapshotEvents)
-            {
-              if (event.state == TaskState.success)
-              {
-                await nuevodocumento.update({'imagen':rutaImg.getDownloadURL()});
-                return true;
-              }
-              else if (event.state == TaskState.running)
-              {
-                //Esperar
-              }
-              else
-              {
-                print("Error Subiendo Imagen");
-                return false;
-              }
+        while (true) {
+          await for (ProcessTask event in subida.snapshotEvents) {
+            if (event.state == TaskState.success) {
+              await nuevodocumento.update({'imagen': rutaImg.getDownloadURL()});
+              return true;
+            } else if (event.state == TaskState.running) {
+              //Esperar
+            } else {
+              print("Error Subiendo Imagen");
+              return false;
             }
           }
         }
-        catch (e)
-        {
-          print("Error Grabando la Imagen. Exeption: $e");
-          return false;
-        }
+      } catch (e) {
+        print("Error Grabando la Imagen. Exeption: $e");
+        return false;
       }
+    }
 
     return true;
-
   }
-
 }

@@ -1,3 +1,4 @@
+import 'package:ept_frontend/screens/pago_cuotas.dart';
 import 'package:ept_frontend/services/businessdata.dart';
 import 'package:flutter/material.dart';
 
@@ -5,7 +6,7 @@ import '../models/usuario.dart';
 // import 'package:pdf/widgets.dart';
 
 class Deudores extends StatelessWidget {
-  Deudores({Key? key}) : super(key: key);
+  const Deudores({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -17,14 +18,14 @@ class Deudores extends StatelessWidget {
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         alignment: Alignment.topCenter,
-        child: TablaDeudores(),
+        child: const TablaDeudores(),
       ),
     );
   }
 }
 
 class TablaDeudores extends StatefulWidget {
-  TablaDeudores({super.key});
+  const TablaDeudores({super.key});
 
   @override
   State<TablaDeudores> createState() => _TablaDeudoresState();
@@ -34,11 +35,11 @@ class _TablaDeudoresState extends State<TablaDeudores> {
   var ejemplo = [];
   final servicio = BusinessData();
 
-  Future<List<_fila>> getData() async {
+  Future<List<Fila>> getData() async {
     final servicio = BusinessData();
     List<Map<Usuario, double>> estudianteDeuda =
         await servicio.listarDeudores();
-    var dataset = <_fila>[];
+    var dataset = <Fila>[];
 
     for (var deudor in estudianteDeuda) {
       Usuario alumno = deudor.keys.first;
@@ -49,7 +50,7 @@ class _TablaDeudoresState extends State<TablaDeudores> {
       } catch (e) {
         tutor = null;
       }
-      dataset.add(_fila(alumno: alumno, tutor: tutor, deuda: deuda));
+      dataset.add(Fila(alumno: alumno, tutor: tutor, deuda: deuda));
     }
     return dataset;
   }
@@ -68,6 +69,7 @@ class _TablaDeudoresState extends State<TablaDeudores> {
                 DataColumn(label: Text('Nombre del Tutor')),
                 DataColumn(label: Text('Email del tutor')),
                 DataColumn(label: Text('Monto de deuda')),
+                DataColumn(label: Text('Generar pago')),
               ],
               rows: snapshot.data!.map((e) {
                 return DataRow(cells: [
@@ -76,6 +78,22 @@ class _TablaDeudoresState extends State<TablaDeudores> {
                   DataCell(Text((e.tutor != null) ? e.tutor!.nombre : '')),
                   DataCell(Text((e.tutor != null) ? e.tutor!.correo : '')),
                   DataCell(Text(e.deuda.toString())),
+                  DataCell(
+                    IconButton(
+                      icon: const Icon(Icons.add),
+                      onPressed: () {
+                        Navigator.push<void>(
+                          context,
+                          MaterialPageRoute<void>(
+                            builder: (BuildContext context) => PagoCuotas(
+                              deudor: e.alumno,
+                              deuda: e.deuda,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
                 ]);
               }).toList(),
             );
@@ -92,11 +110,11 @@ class _TablaDeudoresState extends State<TablaDeudores> {
   }
 }
 
-class _fila {
+class Fila {
   Usuario alumno;
   Usuario? tutor;
   double deuda;
-  _fila({
+  Fila({
     required this.alumno,
     this.tutor,
     required this.deuda,

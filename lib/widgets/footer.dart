@@ -6,7 +6,7 @@ class PageFooter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double contextWidth = MediaQuery.of(context).size.width;
-    double contextHeight = MediaQuery.of(context).size.height;
+    // double contextHeight = MediaQuery.of(context).size.height;
     return Container(
       alignment: Alignment.topLeft,
       width: contextWidth,
@@ -42,8 +42,7 @@ class PageFooter extends StatelessWidget {
                 icon: const Icon(Icons.location_pin),
                 label: const Text(
                     'Ruta 11 Km. 1023, Resistencia, Chaco, Argentina'),
-                onPressed: () => {
-                  },
+                onPressed: () => {},
               ),
             ],
           ),

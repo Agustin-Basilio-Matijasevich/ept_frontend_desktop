@@ -35,12 +35,13 @@ class _ContenidoState extends State<Contenido> {
   Set<Curso> cursosSeleccionados = {};
   final servicio = BusinessData();
 
-  List<Usuario>? docentes;
-  List<Curso>? cursos;
-
-  @override
-  void initState() {
-    super.initState();
+  Future<bool> asignarListaCursos(Usuario docente, List<Curso> cursos) async {
+    bool result = true;
+    for (var curso in cursos) {
+      bool response = await servicio.adherirCurso(docente, curso);
+      if (!response) result = false;
+    }
+    return result;
   }
 
   @override
@@ -128,7 +129,6 @@ class _ContenidoState extends State<Contenido> {
                                           (element) =>
                                               element.nombre == e.nombre),
                                       onSelectChanged: (value) {
-                                        print(value);
                                         if (value!) {
                                           setState(() {
                                             cursosSeleccionados.add(e);
@@ -174,49 +174,43 @@ class _ContenidoState extends State<Contenido> {
             foregroundColor: MaterialStatePropertyAll(Colors.white),
             textStyle: MaterialStatePropertyAll(TextStyle(fontSize: 24)),
           ),
-          onPressed: () async {
-            bool error = false;
+          onPressed: () {
             if (docenteSeleccionado != null && cursosSeleccionados.isNotEmpty) {
-              for (var curso in cursosSeleccionados) {
-                bool fin =
-                    await servicio.adherirCurso(docenteSeleccionado!, curso);
-                if (!fin) error = true;
-              }
-              if (!error) {
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: const Text('Asignacion de curso'),
-                    content: const Text(
-                        'Se asignaron los cursos al usuario con exito'),
-                    actions: [
-                      TextButton(
-                        child: const Text('Aceptar'),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      )
-                    ],
-                  ),
-                );
-              } else {
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: const Text('Asignacion de curso'),
-                    content: const Text(
-                        'Ocurrio un error en la asignacion de cursos'),
-                    actions: [
-                      TextButton(
-                        child: const Text('Aceptar'),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      )
-                    ],
-                  ),
-                );
-              }
+              showDialog(
+                context: context,
+                builder: (context) => FutureBuilder(
+                  future: asignarListaCursos(
+                      docenteSeleccionado!, cursosSeleccionados.toList()),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      String mensaje = '';
+                      if (snapshot.data!) {
+                        mensaje = 'Exito asignando los cursos al docente';
+                      } else {
+                        mensaje =
+                            'Ocurrio un error asignando los cursos al docente';
+                      }
+                      return AlertDialog(
+                        title: const Text('Resultado de asignacion'),
+                        content: Text(mensaje),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text('Aceptar'),
+                          ),
+                        ],
+                      );
+                    } else {
+                      return Container(
+                        alignment: Alignment.center,
+                        width: 64,
+                        height: 64,
+                        child: const CircularProgressIndicator(),
+                      );
+                    }
+                  },
+                ),
+              );
             }
           },
           child: const Text('Asignar docente'),

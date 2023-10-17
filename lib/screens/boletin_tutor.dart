@@ -1,8 +1,8 @@
-import 'package:ept_frontend/models/nota.dart';
+// import 'package:ept_frontend/models/nota.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../models/curso.dart';
+// import '../models/curso.dart';
 import '../models/usuario.dart';
 import '../services/businessdata.dart';
 
@@ -15,17 +15,17 @@ class BoletinTutor extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Boletin'),
       ),
-      body: Container(
+      body: SizedBox(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
-        child: Contenido(),
+        child: const Contenido(),
       ),
     );
   }
 }
 
 class Contenido extends StatefulWidget {
-  Contenido({super.key});
+  const Contenido({super.key});
 
   @override
   State<Contenido> createState() => _ContenidoState();
@@ -45,13 +45,11 @@ class _ContenidoState extends State<Contenido> {
         FutureBuilder(
           future: servicio.getHijos(usuario!),
           builder: (context, snapshot) {
-            print(snapshot.connectionState);
             if (snapshot.data != null && snapshot.data!.isNotEmpty) {
-              return SizedBox(
+              return Container(
+                padding: const EdgeInsets.all(20),
                 child: DropdownMenu<Usuario>(
-                  label: (usuarioSeleccionado != null)
-                      ? Text(usuarioSeleccionado!.nombre)
-                      : Text(''),
+                  label: const Text('Seleccione un usuario'),
                   onSelected: (value) {
                     setState(() {
                       usuarioSeleccionado = value;
@@ -75,54 +73,62 @@ class _ContenidoState extends State<Contenido> {
           },
         ),
         FutureBuilder(
-          future: servicio.getPromedioPorCurso(usuarioSeleccionado!, 2023),
+          future: servicio.getPromedioPorCurso(usuarioSeleccionado, 2023),
           builder: (context, snapshot) {
-            if (snapshot.data != null && snapshot.data!.isNotEmpty) {
-              var columns = const [
-                DataColumn(label: Text('Cursos')),
-                DataColumn(label: Text('1er trimestre')),
-                DataColumn(label: Text('2do trimestre')),
-                DataColumn(label: Text('3er cuatrimestre')),
-                DataColumn(label: Text('Promedio')),
-              ];
+            if (usuarioSeleccionado == null) {
+              return const SizedBox();
+            } else if (snapshot.connectionState == ConnectionState.done) {
+              if (snapshot.data != null && snapshot.data!.isNotEmpty) {
+                var columns = const [
+                  DataColumn(label: Text('Cursos')),
+                  DataColumn(label: Text('1er trimestre')),
+                  DataColumn(label: Text('2do trimestre')),
+                  DataColumn(label: Text('3er cuatrimestre')),
+                  DataColumn(label: Text('Promedio')),
+                ];
 
-              var rows = <DataRow>[];
-              // Itera por curso
-              for (var curso in snapshot.data!) {
-                var nombreCurso = curso.keys.first.nombre;
-                var notas = curso.values.first;
-                int sumatoria = 0;
-                int cantNotas = 0;
-                for (var nota in notas) {
-                  cantNotas++;
-                  sumatoria += (nota == null) ? 0 : nota;
+                var rows = <DataRow>[];
+                // Itera por curso
+                for (var curso in snapshot.data!) {
+                  var nombreCurso = curso.keys.first.nombre;
+                  var notas = curso.values.first;
+                  int sumatoria = 0;
+                  int cantNotas = 0;
+                  for (var nota in notas) {
+                    if (nota != null) {
+                      cantNotas++;
+                      sumatoria += nota;
+                    }
+                  }
+
+                  int promedio =
+                      (sumatoria / ((cantNotas == 0) ? 1 : cantNotas)).round();
+
+                  rows.add(
+                    DataRow(
+                      cells: [
+                        DataCell(Text(nombreCurso)),
+                        DataCell(Text(
+                            (notas[0] != null) ? notas[0].toString() : '')),
+                        DataCell(Text(
+                            (notas[1] != null) ? notas[1].toString() : '')),
+                        DataCell(Text(
+                            (notas[2] != null) ? notas[2].toString() : '')),
+                        DataCell(
+                            Text((cantNotas == 0) ? '' : promedio.toString())),
+                      ],
+                    ),
+                  );
                 }
 
-                int promedio = (sumatoria / cantNotas).round();
-
-                rows.add(
-                  DataRow(
-                    cells: [
-                      DataCell(Text(nombreCurso)),
-                      DataCell(
-                          Text((notas[0] != null) ? notas[0].toString() : '')),
-                      DataCell(
-                          Text((notas[1] != null) ? notas[1].toString() : '')),
-                      DataCell(
-                          Text((notas[2] != null) ? notas[2].toString() : '')),
-                      DataCell(Text(promedio.toString())),
-                    ],
-                  ),
-                );
+                return DataTable(columns: columns, rows: rows);
+              } else if (snapshot.data != null && snapshot.data!.isEmpty) {
+                return const Text('No se encontraron datos para mostrar');
+              } else {
+                return const Text('Ocurrio un error');
               }
-
-              return DataTable(columns: columns, rows: rows);
-            } else if (snapshot.data != null && snapshot.data!.isEmpty) {
-              return const Text('No se encontraron datos para mostrar');
-            } else if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator();
             } else {
-              return const Text('Ocurrio un error');
+              return const CircularProgressIndicator();
             }
           },
         ),

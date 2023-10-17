@@ -191,8 +191,9 @@ class EstadoContenidoForm extends State<ContenidoForm> {
                         context: navigatorKey.currentContext!,
                         builder: (context) {
                           return AlertDialog(
-                            title: Text("Respuesta Login"),
-                            content: Text("Las credenciales son incorrectas"),
+                            title: const Text("Respuesta Login"),
+                            content:
+                                const Text("Las credenciales son incorrectas"),
                             actions: [
                               TextButton(
                                 onPressed: () {

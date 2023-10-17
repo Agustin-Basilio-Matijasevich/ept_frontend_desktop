@@ -38,9 +38,15 @@ class _ContenidoState extends State<Contenido> {
   List<Usuario>? docentes;
   List<Curso>? cursos;
 
-  @override
-  void initState() {
-    super.initState();
+  Future<bool> asignarListaCursos(
+      Usuario estudiante, List<Curso> cursos) async {
+    bool result = true;
+    for (var curso in cursos) {
+      bool response =
+          await servicio.adherirCurso(estudianteSeleccionado!, curso);
+      if (!response) result = false;
+    }
+    return result;
   }
 
   @override
@@ -130,7 +136,6 @@ class _ContenidoState extends State<Contenido> {
                                           (element) =>
                                               element.nombre == e.nombre),
                                       onSelectChanged: (value) {
-                                        print(value);
                                         if (value!) {
                                           setState(() {
                                             cursosSeleccionados.add(e);
@@ -176,50 +181,44 @@ class _ContenidoState extends State<Contenido> {
             foregroundColor: MaterialStatePropertyAll(Colors.white),
             textStyle: MaterialStatePropertyAll(TextStyle(fontSize: 24)),
           ),
-          onPressed: () async {
-            bool error = false;
+          onPressed: () {
             if (estudianteSeleccionado != null &&
                 cursosSeleccionados.isNotEmpty) {
-              for (var curso in cursosSeleccionados) {
-                bool fin =
-                    await servicio.adherirCurso(estudianteSeleccionado!, curso);
-                if (!fin) error = true;
-              }
-              if (!error) {
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: const Text('Asignacion de curso'),
-                    content: const Text(
-                        'Se asignaron los cursos al usuario con exito'),
-                    actions: [
-                      TextButton(
-                        child: const Text('Aceptar'),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      )
-                    ],
-                  ),
-                );
-              } else {
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: const Text('Asignacion de curso'),
-                    content: const Text(
-                        'Ocurrio un error en la asignacion de cursos'),
-                    actions: [
-                      TextButton(
-                        child: const Text('Aceptar'),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      )
-                    ],
-                  ),
-                );
-              }
+              showDialog(
+                context: context,
+                builder: (context) => FutureBuilder(
+                  future: asignarListaCursos(
+                      estudianteSeleccionado!, cursosSeleccionados.toList()),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      String mensaje = '';
+                      if (snapshot.data!) {
+                        mensaje = 'Exito asignando los cursos al estudiante';
+                      } else {
+                        mensaje =
+                            'Ocurrio un error asignando los cursos al estudiante';
+                      }
+                      return AlertDialog(
+                        title: const Text('Resultado de asignacion'),
+                        content: Text(mensaje),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text('Aceptar'),
+                          ),
+                        ],
+                      );
+                    } else {
+                      return Container(
+                        alignment: Alignment.center,
+                        width: 64,
+                        height: 64,
+                        child: const CircularProgressIndicator(),
+                      );
+                    }
+                  },
+                ),
+              );
             }
           },
           child: Container(

@@ -5,16 +5,18 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class Wrapper extends StatelessWidget {
+  const Wrapper({super.key});
+
   @override
   Widget build(BuildContext context) {
-
-    final usuario = Provider.of<Usuario?>(context); //Escucha si el usuario esta logueado
+    final usuario =
+        Provider.of<Usuario?>(context); //Escucha si el usuario esta logueado
 
     //Retorna pantalla de home segun si estas logueado o no
-    if (usuario == null){
-      return Login();
-    } else{
-      return Welcome();
+    if (usuario == null) {
+      return const Login();
+    } else {
+      return const Welcome();
     }
   }
 }
