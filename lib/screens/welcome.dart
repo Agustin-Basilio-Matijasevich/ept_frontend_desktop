@@ -219,32 +219,32 @@ class _CompanyDescription extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     bool esPantallaChica = MediaQuery.of(context).size.width < 600;
+    Usuario? usuario = Provider.of<Usuario?>(context);
 
-    return Text(
-      'Inspiramos, desafiamos y empoderamos a todos '
-      'nuestros alumnos a ser miembros comprometidos '
-      'y éticos de una comunidad global, para que se '
-      'conviertan en agentes de cambio conscientes de '
-      'sí mismos,seguros, innovadores y colaborativos.',
-      softWrap: true,
-      style: esPantallaChica
-          ? const TextStyle(
-              //fontFamily:
-              color: Color(0xFF0c245e),
-              fontSize: 30,
-              //fontStyle: FontStyle.italic,
-              fontWeight: FontWeight.bold,
-              fontStyle: FontStyle.italic,
-            )
-          : const TextStyle(
-              //fontFamily:
-              color: Color(0xFF0c245e),
-              fontSize: 32,
-              //fontStyle: FontStyle.italic,
-              fontWeight: FontWeight.bold,
-              fontStyle: FontStyle.italic,
-            ),
-      textAlign: esPantallaChica ? TextAlign.center : TextAlign.left,
+    return Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(80, 0, 0, 0),
+      child: Text(
+        "¡Bienvenido ${usuario?.nombre} \nal sistema de gestión de\neducar para trasformar!",
+        softWrap: true,        
+        textAlign: esPantallaChica ? TextAlign.center : TextAlign.left,
+        style: esPantallaChica
+            ? const TextStyle(
+                //fontFamily:
+                color: Color(0xFF0c245e),
+                fontSize: 30,
+                //fontStyle: FontStyle.italic,
+                fontWeight: FontWeight.bold,
+                fontStyle: FontStyle.italic,
+              )
+            : const TextStyle(
+                //fontFamily:
+                color: Color(0xFF0c245e),
+                fontSize: 40,
+                //fontStyle: FontStyle.italic,
+                fontWeight: FontWeight.bold,
+                fontStyle: FontStyle.italic,
+              ),
+      ),
     );
   }
 }
@@ -256,9 +256,12 @@ class _Logo extends StatelessWidget {
   Widget build(BuildContext context) {
     bool esPantallaChica = MediaQuery.of(context).size.width < 600;
 
-    return Center(
-      child: Image.asset("assets/images/logo.png",
-          scale: 1, width: esPantallaChica ? 350 : null),
+    return Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(145, 0, 0, 0),
+      child: Center(
+        child: Image.asset("assets/images/logo.png",
+            scale: 1, width: esPantallaChica ? 350 : null),
+      ),
     );
   }
 }
