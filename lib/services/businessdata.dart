@@ -211,7 +211,7 @@ class BusinessData {
     List<Nota> segundoTrimestre = [];
     List<Nota> tercerTrimestre = [];
     int suma;
-    List<int?> retorno = [];
+    List<int?> retorno = [null,null,null];
 
     for (var nota in notas) {
       DateTime fechaNota = DateTime.utc(anio, nota.fecha.month, nota.fecha.day);
