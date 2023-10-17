@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:ept_frontend/services/auth.dart';
 
 class Login extends StatelessWidget {
-  Login({Key? key}) : super(key: key);
+  const Login({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -191,14 +191,15 @@ class EstadoContenidoForm extends State<ContenidoForm> {
                         context: navigatorKey.currentContext!,
                         builder: (context) {
                           return AlertDialog(
-                            title: Text("Respuesta Login"),
-                            content: Text("Las credenciales son incorrectas"),
+                            title: const Text("Respuesta Login"),
+                            content:
+                                const Text("Las credenciales son incorrectas"),
                             actions: [
                               TextButton(
                                 onPressed: () {
                                   Navigator.of(context).pop();
                                 },
-                                child: Text("Aceptar"),
+                                child: const Text("Aceptar"),
                               ),
                             ],
                           );

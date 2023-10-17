@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:ept_frontend/services/businessdata.dart';
+// import 'package:ept_frontend/services/businessdata.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:file_picker/file_picker.dart';
@@ -8,7 +8,7 @@ import '../models/usuario.dart';
 import '../services/auth.dart';
 
 class Perfil extends StatelessWidget {
-  Perfil({Key? key}) : super(key: key);
+  const Perfil({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +32,7 @@ class Perfil extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Perfil'),
+        title: const Text('Perfil'),
       ),
       body: Container(
         width: MediaQuery.of(context).size.width,
@@ -71,12 +71,12 @@ class Perfil extends StatelessWidget {
                             context: context,
                             builder: (context) {
                               return AlertDialog(
-                                title: Text('Error'),
-                                content: Text(
+                                title: const Text('Error'),
+                                content: const Text(
                                     'El tamaño de la imagen es demasiado grande. El máximo es 4MB'),
                                 actions: [
                                   TextButton(
-                                    child: Text('Aceptar'),
+                                    child: const Text('Aceptar'),
                                     onPressed: () {
                                       Navigator.pop(context);
                                     },
@@ -95,12 +95,12 @@ class Perfil extends StatelessWidget {
                               context: context,
                               builder: (context) {
                                 return AlertDialog(
-                                  title: Text('Exito'),
-                                  content: Text(
+                                  title: const Text('Exito'),
+                                  content: const Text(
                                       'Imagen de Perfil Actualizada Correctamente'),
                                   actions: [
                                     TextButton(
-                                      child: Text('Aceptar'),
+                                      child: const Text('Aceptar'),
                                       onPressed: () {
                                         Navigator.pop(context);
                                       },
@@ -114,12 +114,12 @@ class Perfil extends StatelessWidget {
                               context: context,
                               builder: (context) {
                                 return AlertDialog(
-                                  title: Text('Error'),
-                                  content: Text(
+                                  title: const Text('Error'),
+                                  content: const Text(
                                       'Ocurrio un error subiendo la imagen. Intente nuevamente'),
                                   actions: [
                                     TextButton(
-                                      child: Text('Aceptar'),
+                                      child: const Text('Aceptar'),
                                       onPressed: () {
                                         Navigator.pop(context);
                                       },
@@ -143,7 +143,7 @@ class Perfil extends StatelessWidget {
                     ),
                   ),
                   Container(
-                    padding: EdgeInsets.fromLTRB(50, 50, 0, 0),
+                    padding: const EdgeInsets.fromLTRB(50, 50, 0, 0),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -165,20 +165,6 @@ class Perfil extends StatelessWidget {
                     ),
                   ),
                 ],
-              ),
-              Container(
-                padding: EdgeInsets.fromLTRB(0, 50, 0, 0),
-                child: TextButton(
-                  style: ButtonStyle(
-                    textStyle: MaterialStateProperty.all(
-                      const TextStyle(
-                        fontSize: 24,
-                      ),
-                    ),
-                  ),
-                  onPressed: () {},
-                  child: const Text('Cambiar contraseña'),
-                ),
               ),
             ],
           ),

@@ -25,12 +25,12 @@ class LoginButton extends StatelessWidget {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => Login()),
+            MaterialPageRoute(builder: (context) => const Login()),
           );
         },
       );
     } else {
-      if (user.foto != ''){
+      if (user.foto != '') {
         return TextButton.icon(
           style: const ButtonStyle(
             foregroundColor: MaterialStatePropertyAll(Colors.white),
@@ -48,8 +48,7 @@ class LoginButton extends StatelessWidget {
             _auth.logout();
           },
         );
-      }
-      else{
+      } else {
         return TextButton.icon(
           style: const ButtonStyle(
             foregroundColor: MaterialStatePropertyAll(Colors.white),
@@ -68,7 +67,6 @@ class LoginButton extends StatelessWidget {
           },
         );
       }
-
     }
   }
 }

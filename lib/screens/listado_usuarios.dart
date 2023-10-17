@@ -5,26 +5,26 @@ import '../models/usuario.dart';
 // import 'package:pdf/widgets.dart';
 
 class ListadoUsuarios extends StatelessWidget {
-  ListadoUsuarios({Key? key}) : super(key: key);
+  const ListadoUsuarios({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Listado de usuarios'),
+        title: const Text('Listado de usuarios'),
       ),
-      body: Container(
+      body: SizedBox(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         // alignment: Alignment.,
-        child: TablaUsuarios(),
+        child: const TablaUsuarios(),
       ),
     );
   }
 }
 
 class TablaUsuarios extends StatefulWidget {
-  TablaUsuarios({super.key});
+  const TablaUsuarios({super.key});
 
   @override
   State<TablaUsuarios> createState() => _TablaUsuariosState();
@@ -60,7 +60,7 @@ class _TablaUsuariosState extends State<TablaUsuarios> {
       // mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Container(
-          padding: EdgeInsets.all(30),
+          padding: const EdgeInsets.all(30),
           child: DropdownMenu<UserRoles>(
             hintText: 'Filtro por rol',
             initialSelection: UserRoles.norol,
@@ -128,7 +128,7 @@ class _TablaUsuariosState extends State<TablaUsuarios> {
                                     ),
                                   ),
                                 )
-                              : Icon(Icons.person),
+                              : const Icon(Icons.person),
                         ),
                       ),
                       DataCell(Text(e.uid)),
@@ -136,11 +136,11 @@ class _TablaUsuariosState extends State<TablaUsuarios> {
                   }).toList(),
                 );
               }
-              return Text('No hay deudores para mostrar');
+              return const Text('No hay deudores para mostrar');
             } else {
               return Container(
-                child: CircularProgressIndicator(),
                 alignment: Alignment.center,
+                child: const CircularProgressIndicator(),
               );
             }
           },
@@ -150,11 +150,11 @@ class _TablaUsuariosState extends State<TablaUsuarios> {
   }
 }
 
-class _fila {
+class Fila {
   Usuario alumno;
   Usuario? tutor;
   double deuda;
-  _fila({
+  Fila({
     required this.alumno,
     this.tutor,
     required this.deuda,

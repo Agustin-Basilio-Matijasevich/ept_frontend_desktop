@@ -3,55 +3,52 @@ import 'package:flutter/material.dart';
 import '../services/businessdata.dart';
 
 class ListadoCursos extends StatelessWidget {
-  ListadoCursos({Key? key}) : super(key: key);
+  const ListadoCursos({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Listado de cursos'),
+        title: const Text('Listado de cursos'),
       ),
       body: Container(
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
-          child: GrillaCursos()),
+          alignment: Alignment.topCenter,
+          child: const GrillaCursos()),
     );
   }
 }
 
 class GrillaCursos extends StatefulWidget {
-  GrillaCursos({super.key});
-  final servicio = BusinessData();
-  String textoFiltro = '';
+  const GrillaCursos({super.key});
 
   @override
   State<GrillaCursos> createState() => GrillaCursosState();
 }
 
 class GrillaCursosState extends State<GrillaCursos> {
+  final servicio = BusinessData();
+  String textoFiltro = '';
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        TextField(
-          onSubmitted: (value) {
-            setState(() {
-              widget.textoFiltro = value;
-            });
-          },
-        ),
-        FutureBuilder(
-          future: widget.servicio.getCursos(),
-          builder: (context, snapshot) {
-            print('Iniciando builder');
-            if (snapshot.connectionState == ConnectionState.done) {
-              print('Conexion finalizada');
-              if (snapshot.data!.isEmpty) {
-                print('Datos vacios');
-                return Icon(Icons.cancel_presentation_sharp);
-              } else {
-                print('Cargando tabla');
+    return SizedBox(
+      width: MediaQuery.of(context).size.width / 2,
+      height: MediaQuery.of(context).size.height - 200,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          TextField(
+            onSubmitted: (value) {
+              setState(() {
+                textoFiltro = value;
+              });
+            },
+          ),
+          FutureBuilder(
+            future: servicio.getCursos(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData && snapshot.data!.isNotEmpty) {
                 return DataTable(
                   columns: const [
                     DataColumn(label: Text('Nombre')),
@@ -74,25 +71,21 @@ class GrillaCursosState extends State<GrillaCursos> {
                     },
                   ).toList(),
                 );
+              } else if (snapshot.hasData && snapshot.data!.isEmpty) {
+                return const Text('No se encontraron datos para mostrar');
+              } else if (snapshot.connectionState == ConnectionState.waiting) {
+                return const SizedBox(
+                  height: 32,
+                  width: 32,
+                  child: CircularProgressIndicator(),
+                );
+              } else {
+                return const Text('Ocurrio un error');
               }
-            } else {
-              print(snapshot.connectionState);
-              return const SizedBox(
-                height: 32,
-                width: 32,
-                child: CircularProgressIndicator(),
-              );
-            }
-          },
-        ),
-      ],
+            },
+          ),
+        ],
+      ),
     );
   }
 }
-
-
-// final String nombre = json['nombre'];
-//       final DiaSemana dia = DiaSemana.values.firstWhere((element) => element.toString() == json['dia']);
-//       final TimeOfDay horainicio = TimeOfDay(hour: int.parse(json['horainicio'].toString()), minute: int.parse(json['minutoinicio'].toString()));
-//       final TimeOfDay horafin = TimeOfDay(hour: int.parse(json['horafin'].toString()), minute: int.parse(json['minutofin'].toString()));
-//       final String aula = json['aula'];
