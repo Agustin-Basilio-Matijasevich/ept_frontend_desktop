@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../models/usuario.dart';
 import '../services/businessdata.dart';
+import '../services/pdfgenerator.dart';
 
 class PagoCuotas extends StatelessWidget {
   PagoCuotas({Key? key, required this.deudor, required this.deuda})
@@ -80,11 +81,11 @@ class _PagoCuotasContenidoState extends State<PagoCuotasContenido> {
           child: const Text('Pagar'),
           onPressed: () {
             if (tipoPago != null) {
+              var pago = Pago(tipoPago!, widget.deuda, DateTime.now());
               showDialog(
                 context: context,
                 builder: (context) => FutureBuilder(
-                  future: servicio.pagar(widget.deudor,
-                      Pago(tipoPago!, widget.deuda, DateTime.now())),
+                  future: servicio.pagar(widget.deudor, pago),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       if (snapshot.data!) {
@@ -95,13 +96,53 @@ class _PagoCuotasContenidoState extends State<PagoCuotasContenido> {
                           actions: [
                             TextButton(
                               onPressed: () async {
+                                bool result;
                                 var fileOutput =
                                     await FilePicker.platform.saveFile(
                                   allowedExtensions: ['pdf'],
                                   dialogTitle: 'Guardar comprobante factura',
                                   type: FileType.custom,
+                                ).then(
+                                  (value) async {
+                                    print(value);
+                                    result = await PDFGenerator
+                                        .generarComprobantePago(
+                                      widget.deudor,
+                                      pago,
+                                      value!,
+                                    );
+                                    return result;
+                                  },
+                                ).then(
+                                  (value) {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        String message = '';
+                                        if (value) {
+                                          message =
+                                              'Se guardo el comprobante exitosamente';
+                                        } else {
+                                          message =
+                                              'Ocurrio un error guardando el pdf';
+                                        }
+                                        return AlertDialog(
+                                          title: const Text(
+                                              'Resultado guardado comprobante'),
+                                          content: Text(message),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                              child: const Text('Aceptar'),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
                                 );
-                                Navigator.of(context).pop();
                               },
                               child: const Text('Si'),
                             ),

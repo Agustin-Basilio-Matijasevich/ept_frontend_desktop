@@ -1,9 +1,11 @@
 import 'package:ept_frontend/services/businessdata.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../models/curso.dart';
 import '../models/usuario.dart';
+import '../services/pdfgenerator.dart';
 // import 'package:pdf/widgets.dart';
 
 // Para mostrar estudiantes que tiene un profesor por cada materia
@@ -36,6 +38,8 @@ class TablaUsuarios extends StatefulWidget {
 class _TablaUsuariosState extends State<TablaUsuarios> {
   Curso? cursoSeleccionado;
   final servicio = BusinessData();
+
+  List<Usuario>? dataset;
 
   @override
   Widget build(BuildContext context) {
@@ -81,6 +85,7 @@ class _TablaUsuariosState extends State<TablaUsuarios> {
             if (cursoSeleccionado == null) {
               return const SizedBox();
             } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+              dataset = snapshot.data;
               return DataTable(
                 columns: const [
                   DataColumn(label: Text('Nombre del usuario')),
@@ -142,6 +147,68 @@ class _TablaUsuariosState extends State<TablaUsuarios> {
             }
           },
         ),
+        Builder(
+          builder: (context) {
+            if (dataset != null &&
+                dataset!.isNotEmpty &&
+                cursoSeleccionado != null) {
+              return TextButton(
+                style: const ButtonStyle(
+                  backgroundColor: MaterialStatePropertyAll(Colors.blue),
+                  foregroundColor: MaterialStatePropertyAll(Colors.white),
+                  textStyle: MaterialStatePropertyAll(TextStyle(fontSize: 24)),
+                ),
+                onPressed: () async {
+                  bool result;
+                  var fileOutput = await FilePicker.platform.saveFile(
+                    allowedExtensions: ['pdf'],
+                    dialogTitle: 'Guardar listado de alumnos',
+                    type: FileType.custom,
+                  ).then(
+                    (value) async {
+                      print(value);
+                      result = await PDFGenerator.listarAlumnosPorCursoPDF(
+                        cursoSeleccionado!,
+                        dataset!,
+                        value!,
+                      );
+                      return result;
+                    },
+                  ).then(
+                    (value) {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          String message = '';
+                          if (value) {
+                            message = 'Se guardo el listado exitosamente';
+                          } else {
+                            message = 'Ocurrio un error guardando el pdf';
+                          }
+                          return AlertDialog(
+                            title: const Text('Resultado guardado listado'),
+                            content: Text(message),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: const Text('Aceptar'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                  );
+                },
+                child: Text('Generar listado PDF'),
+              );
+            } else {
+              return const SizedBox();
+            }
+          },
+        )
       ],
     );
   }
