@@ -217,29 +217,31 @@ class _CompanyDescription extends StatelessWidget {
     bool esPantallaChica = MediaQuery.of(context).size.width < 600;
     Usuario? usuario = Provider.of<Usuario?>(context);
 
-    return Padding(
-      padding: const EdgeInsetsDirectional.fromSTEB(80, 0, 0, 0),
-      child: Text(
-        "¡Bienvenido ${usuario?.nombre} \nal sistema de gestión de\neducar para trasformar!",
-        softWrap: true,
-        textAlign: esPantallaChica ? TextAlign.center : TextAlign.left,
-        style: esPantallaChica
-            ? const TextStyle(
-                //fontFamily:
-                color: Color(0xFF0c245e),
-                fontSize: 30,
-                //fontStyle: FontStyle.italic,
-                fontWeight: FontWeight.bold,
-                fontStyle: FontStyle.italic,
-              )
-            : const TextStyle(
-                //fontFamily:
-                color: Color(0xFF0c245e),
-                fontSize: 40,
-                //fontStyle: FontStyle.italic,
-                fontWeight: FontWeight.bold,
-                fontStyle: FontStyle.italic,
-              ),
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsetsDirectional.fromSTEB(80, 0, 40, 0),
+        child: Text(
+          "¡Bienvenido ${usuario?.nombre} al sistema de gestión de educar para trasformar!",
+          softWrap: true,
+          textAlign: esPantallaChica ? TextAlign.center : TextAlign.left,
+          style: esPantallaChica
+              ? const TextStyle(
+                  //fontFamily:
+                  color: Color(0xFF0c245e),
+                  fontSize: 30,
+                  //fontStyle: FontStyle.italic,
+                  fontWeight: FontWeight.bold,
+                  fontStyle: FontStyle.italic,
+                )
+              : const TextStyle(
+                  //fontFamily:
+                  color: Color(0xFF0c245e),
+                  fontSize: 40,
+                  //fontStyle: FontStyle.italic,
+                  fontWeight: FontWeight.bold,
+                  fontStyle: FontStyle.italic,
+                ),
+        ),
       ),
     );
   }
