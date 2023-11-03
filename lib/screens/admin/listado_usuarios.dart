@@ -1,7 +1,7 @@
 import 'package:ept_frontend/services/businessdata.dart';
 import 'package:flutter/material.dart';
 
-import '../models/usuario.dart';
+import '../../models/usuario.dart';
 // import 'package:pdf/widgets.dart';
 
 class ListadoUsuarios extends StatelessWidget {

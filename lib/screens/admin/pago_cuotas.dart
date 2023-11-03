@@ -2,9 +2,9 @@ import 'package:ept_frontend/models/pago.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
-import '../models/usuario.dart';
-import '../services/businessdata.dart';
-import '../services/pdfgenerator.dart';
+import '../../models/usuario.dart';
+import '../../services/businessdata.dart';
+import '../../services/pdfgenerator.dart';
 
 class PagoCuotas extends StatelessWidget {
   PagoCuotas({Key? key, required this.deudor, required this.deuda})
@@ -144,7 +144,7 @@ class _PagoCuotasContenidoState extends State<PagoCuotasContenido> {
                                   },
                                 );
                               },
-                              child: const Text('Si'),
+                              child: const Text('Si')                              
                             ),
                             TextButton(
                               onPressed: () {

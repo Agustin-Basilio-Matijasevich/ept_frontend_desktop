@@ -3,9 +3,9 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../models/curso.dart';
-import '../models/usuario.dart';
-import '../services/pdfgenerator.dart';
+import '../../models/curso.dart';
+import '../../models/usuario.dart';
+import '../../services/pdfgenerator.dart';
 // import 'package:pdf/widgets.dart';
 
 // Para mostrar estudiantes que tiene un profesor por cada materia
@@ -132,6 +132,7 @@ class _TablaUsuariosState extends State<TablaUsuarios> {
                       ),
                     ),
                     DataCell(Text(e.uid)),
+                    
                   ]);
                 }).toList(),
               );
@@ -147,12 +148,14 @@ class _TablaUsuariosState extends State<TablaUsuarios> {
             }
           },
         ),
+        const SizedBox(
+          height: 30,
+        ),
         Builder(
           builder: (context) {
             if (dataset != null &&
-                dataset!.isNotEmpty &&
-                cursoSeleccionado != null) {
-              return TextButton(
+                dataset!.isNotEmpty) {
+              return TextButton.icon(
                 style: const ButtonStyle(
                   backgroundColor: MaterialStatePropertyAll(Colors.blue),
                   foregroundColor: MaterialStatePropertyAll(Colors.white),
@@ -202,7 +205,8 @@ class _TablaUsuariosState extends State<TablaUsuarios> {
                     },
                   );
                 },
-                child: Text('Generar listado PDF'),
+                label: const Text('Guardar en PDF'),
+                icon: const Icon(Icons.print),
               );
             } else {
               return const SizedBox();

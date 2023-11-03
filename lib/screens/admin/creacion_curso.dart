@@ -5,8 +5,8 @@ import 'package:ept_frontend/models/curso.dart';
 // import 'package:ept_frontend/models/usuario.dart';
 import 'package:flutter/material.dart';
 
-import '../services/auth.dart';
-import '../services/businessdata.dart';
+import '../../services/auth.dart';
+import '../../services/businessdata.dart';
 
 class CreacionCurso extends StatelessWidget {
   const CreacionCurso({super.key});
@@ -99,7 +99,7 @@ class FormularioState extends State<Formulario> {
             decoration: const InputDecoration(
               labelText: 'Nombre',
               hintText: 'Ingrese un nombre',
-              prefixIcon: Icon(Icons.edit_location_alt_outlined),
+              prefixIcon: Icon(Icons.drive_file_rename_outline),
               border: OutlineInputBorder(),
             ),
           ),
@@ -126,7 +126,7 @@ class FormularioState extends State<Formulario> {
             decoration: const InputDecoration(
               labelText: 'Aula',
               hintText: 'Ingrese un aula',
-              prefixIcon: Icon(Icons.room),
+              prefixIcon: Icon(Icons.chair_alt),
               border: OutlineInputBorder(),
             ),
           ),

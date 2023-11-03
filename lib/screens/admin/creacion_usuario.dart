@@ -4,7 +4,7 @@ import 'package:ept_frontend/main.dart';
 import 'package:ept_frontend/models/usuario.dart';
 import 'package:flutter/material.dart';
 
-import '../services/auth.dart';
+import '../../services/auth.dart';
 
 class CreacionUsuario extends StatelessWidget {
   const CreacionUsuario({super.key});
