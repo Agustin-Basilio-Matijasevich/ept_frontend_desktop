@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 // import '../models/curso.dart';
-import '../models/usuario.dart';
-import '../services/businessdata.dart';
+import '../../models/usuario.dart';
+import '../../services/businessdata.dart';
 
 class BoletinEstudiante extends StatelessWidget {
   const BoletinEstudiante({Key? key}) : super(key: key);
