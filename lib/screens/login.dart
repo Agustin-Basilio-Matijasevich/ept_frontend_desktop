@@ -30,8 +30,7 @@ class Login extends StatelessWidget {
                 child: Row(
                   children: const [
                     Expanded(child: _Logo()),
-                    Expanded(
-                      child: Center(child: ContenidoForm()),
+                    Expanded(child: Center(child: ContenidoForm()),
                     ),
                   ],
                 ),
