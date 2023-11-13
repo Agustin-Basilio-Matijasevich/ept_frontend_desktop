@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../models/usuario.dart';
-import '../services/businessdata.dart';
+import '../../models/usuario.dart';
+import '../../services/businessdata.dart';
 
 // Ta enorme esta pantalla :(
 class AsignacionTutor extends StatelessWidget {

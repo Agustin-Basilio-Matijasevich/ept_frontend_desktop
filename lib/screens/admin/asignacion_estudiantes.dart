@@ -1,17 +1,17 @@
 import 'package:ept_frontend/services/businessdata.dart';
 import 'package:flutter/material.dart';
 
-import '../models/curso.dart';
-import '../models/usuario.dart';
+import '../../models/curso.dart';
+import '../../models/usuario.dart';
 
-class AsignacionDocentes extends StatelessWidget {
-  const AsignacionDocentes({Key? key}) : super(key: key);
+class AsignacionEstudiantes extends StatelessWidget {
+  const AsignacionEstudiantes({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Asignacion de docentes'),
+        title: const Text('Asignacion de estudiantes'),
       ),
       body: Container(
         width: MediaQuery.of(context).size.width,
@@ -31,14 +31,19 @@ class Contenido extends StatefulWidget {
 }
 
 class _ContenidoState extends State<Contenido> {
-  Usuario? docenteSeleccionado;
+  Usuario? estudianteSeleccionado;
   Set<Curso> cursosSeleccionados = {};
   final servicio = BusinessData();
 
-  Future<bool> asignarListaCursos(Usuario docente, List<Curso> cursos) async {
+  List<Usuario>? docentes;
+  List<Curso>? cursos;
+
+  Future<bool> asignarListaCursos(
+      Usuario estudiante, List<Curso> cursos) async {
     bool result = true;
     for (var curso in cursos) {
-      bool response = await servicio.adherirCurso(docente, curso);
+      bool response =
+          await servicio.adherirCurso(estudianteSeleccionado!, curso);
       if (!response) result = false;
     }
     return result;
@@ -55,21 +60,22 @@ class _ContenidoState extends State<Contenido> {
               children: [
                 Container(
                   padding: const EdgeInsets.all(20),
-                  child: const Text('Seleccione un docente'),
+                  child: const Text('Seleccione un estudiante'),
                 ),
                 Container(
                   width: MediaQuery.of(context).size.width / 2,
                   height: MediaQuery.of(context).size.height - 200,
                   padding: const EdgeInsets.all(20),
                   child: FutureBuilder(
-                    future: servicio.listarUsuariosFiltroRol(UserRoles.docente),
+                    future:
+                        servicio.listarUsuariosFiltroRol(UserRoles.estudiante),
                     builder: (context, snapshot) {
                       if (snapshot.data != null && snapshot.data!.isNotEmpty) {
                         return DataTable(
                           showCheckboxColumn: true,
                           onSelectAll: (value) {
                             setState(() {
-                              docenteSeleccionado = null;
+                              estudianteSeleccionado = null;
                             });
                           },
                           columns: const [
@@ -79,10 +85,11 @@ class _ContenidoState extends State<Contenido> {
                           rows: snapshot.data!
                               .map(
                                 (e) => DataRow(
-                                    selected: e.uid == docenteSeleccionado?.uid,
+                                    selected:
+                                        e.uid == estudianteSeleccionado?.uid,
                                     onSelectChanged: (value) {
                                       setState(() {
-                                        docenteSeleccionado = e;
+                                        estudianteSeleccionado = e;
                                       });
                                     },
                                     cells: [
@@ -93,7 +100,7 @@ class _ContenidoState extends State<Contenido> {
                               .toList(),
                         );
                       } else {
-                        return const Text('No se encontraron profesores');
+                        return const Text('No se encontraron estudiantes');
                       }
                     },
                   ),
@@ -175,20 +182,21 @@ class _ContenidoState extends State<Contenido> {
             textStyle: MaterialStatePropertyAll(TextStyle(fontSize: 24)),
           ),
           onPressed: () {
-            if (docenteSeleccionado != null && cursosSeleccionados.isNotEmpty) {
+            if (estudianteSeleccionado != null &&
+                cursosSeleccionados.isNotEmpty) {
               showDialog(
                 context: context,
                 builder: (context) => FutureBuilder(
                   future: asignarListaCursos(
-                      docenteSeleccionado!, cursosSeleccionados.toList()),
+                      estudianteSeleccionado!, cursosSeleccionados.toList()),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       String mensaje = '';
                       if (snapshot.data!) {
-                        mensaje = 'Exito asignando los cursos al docente';
+                        mensaje = 'Exito asignando los cursos al estudiante';
                       } else {
                         mensaje =
-                            'Ocurrio un error asignando los cursos al docente';
+                            'Ocurrio un error asignando los cursos al estudiante';
                       }
                       return AlertDialog(
                         title: const Text('Resultado de asignacion'),
@@ -213,7 +221,10 @@ class _ContenidoState extends State<Contenido> {
               );
             }
           },
-          child: const Text('Asignar docente'),
+          child: Container(
+            padding: const EdgeInsets.all(10),
+            child: const Text('Asignar estudiante'),
+          ),
         ),
       ],
     );

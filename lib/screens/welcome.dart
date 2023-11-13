@@ -1,9 +1,9 @@
-import 'package:ept_frontend/screens/asignacion_tutor.dart';
-import 'package:ept_frontend/screens/boletin_estudiante.dart';
-import 'package:ept_frontend/screens/deuda.dart';
+import 'package:ept_frontend/screens/admin/asignacion_tutor.dart';
+import 'package:ept_frontend/screens/students/boletin_estudiante.dart';
+import 'package:ept_frontend/screens/parents/deuda.dart';
 import 'package:ept_frontend/screens/horarios_estudiante.dart';
-import 'package:ept_frontend/screens/horarios_tutor.dart';
-import 'package:ept_frontend/screens/listado_estudiantes.dart';
+import 'package:ept_frontend/screens/parents/horarios_tutor.dart';
+import 'package:ept_frontend/screens/teachers/listado_estudiantes.dart';
 // import 'package:ept_frontend/screens/pago_cuotas.dart';
 import 'package:ept_frontend/screens/perfil.dart';
 import 'package:ept_frontend/widgets/footer.dart';
@@ -12,15 +12,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../models/usuario.dart';
-import 'asignacion_docentes.dart';
-import 'asignacion_estudiantes.dart';
-import 'boletin_tutor.dart';
-import 'creacion_curso.dart';
-import 'creacion_usuario.dart';
-import 'deudores.dart';
-import 'listado_cursos.dart';
-import 'listado_usuarios.dart';
-import 'notas.dart';
+import 'admin/asignacion_docentes.dart';
+import 'admin/asignacion_estudiantes.dart';
+import 'parents/boletin_tutor.dart';
+import 'admin/creacion_curso.dart';
+import 'admin/creacion_usuario.dart';
+import 'admin/deudores.dart';
+import 'admin/listado_cursos.dart';
+import 'admin/listado_usuarios.dart';
+import 'teachers/notas.dart';
 
 class Welcome extends StatelessWidget {
   const Welcome({super.key});
@@ -170,15 +170,15 @@ class Welcome extends StatelessWidget {
           // Seccion(
           //     context, 'Horarios', HorariosTutor(), Icons.watch_later_outlined),
           seccion(context, 'Asignación de estudiantes',
-              const AsignacionEstudiantes(), Icons.room),
+              const AsignacionEstudiantes(), Icons.school),
           seccion(context, 'Asignación de docentes', const AsignacionDocentes(),
-              Icons.room),
+              Icons.person_add_alt_1),
           seccion(context, 'Asignacion de tutores', const AsignacionTutor(),
-              Icons.people),
+              Icons.supervisor_account),
           seccion(context, 'Creación de Usuarios', const CreacionUsuario(),
-              Icons.people_outline_sharp),
+              Icons.group_add_outlined),
           seccion(context, 'Creación de Curso', const CreacionCurso(),
-              Icons.location_pin),
+              Icons.assignment_add),
           seccion(
               context, 'Listado de cursos', const ListadoCursos(), Icons.list),
           seccion(context, 'Listado de usuarios', const ListadoUsuarios(),
@@ -217,29 +217,31 @@ class _CompanyDescription extends StatelessWidget {
     bool esPantallaChica = MediaQuery.of(context).size.width < 600;
     Usuario? usuario = Provider.of<Usuario?>(context);
 
-    return Padding(
-      padding: const EdgeInsetsDirectional.fromSTEB(80, 0, 0, 0),
-      child: Text(
-        "¡Bienvenido ${usuario?.nombre} \nal sistema de gestión de\neducar para trasformar!",
-        softWrap: true,
-        textAlign: esPantallaChica ? TextAlign.center : TextAlign.left,
-        style: esPantallaChica
-            ? const TextStyle(
-                //fontFamily:
-                color: Color(0xFF0c245e),
-                fontSize: 30,
-                //fontStyle: FontStyle.italic,
-                fontWeight: FontWeight.bold,
-                fontStyle: FontStyle.italic,
-              )
-            : const TextStyle(
-                //fontFamily:
-                color: Color(0xFF0c245e),
-                fontSize: 40,
-                //fontStyle: FontStyle.italic,
-                fontWeight: FontWeight.bold,
-                fontStyle: FontStyle.italic,
-              ),
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsetsDirectional.fromSTEB(80, 0, 40, 0),
+        child: Text(
+          "¡Bienvenido ${usuario?.nombre} al sistema de gestión de educar para trasformar!",
+          softWrap: true,
+          textAlign: esPantallaChica ? TextAlign.center : TextAlign.left,
+          style: esPantallaChica
+              ? const TextStyle(
+                  //fontFamily:
+                  color: Color(0xFF0c245e),
+                  fontSize: 30,
+                  //fontStyle: FontStyle.italic,
+                  fontWeight: FontWeight.bold,
+                  fontStyle: FontStyle.italic,
+                )
+              : const TextStyle(
+                  //fontFamily:
+                  color: Color(0xFF0c245e),
+                  fontSize: 40,
+                  //fontStyle: FontStyle.italic,
+                  fontWeight: FontWeight.bold,
+                  fontStyle: FontStyle.italic,
+                ),
+        ),
       ),
     );
   }

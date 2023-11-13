@@ -4,8 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:ept_frontend/services/businessdata.dart';
 
-import '../models/curso.dart';
-import '../models/usuario.dart';
+import '../../models/curso.dart';
+import '../../models/usuario.dart';
 
 class Notas extends StatelessWidget {
   const Notas({Key? key}) : super(key: key);

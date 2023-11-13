@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../services/businessdata.dart';
+import '../../services/businessdata.dart';
 
 class ListadoCursos extends StatelessWidget {
   const ListadoCursos({Key? key}) : super(key: key);

@@ -1,8 +1,8 @@
-import 'package:ept_frontend/screens/pago_cuotas.dart';
+import 'package:ept_frontend/screens/admin/pago_cuotas.dart';
 import 'package:ept_frontend/services/businessdata.dart';
 import 'package:flutter/material.dart';
 
-import '../models/usuario.dart';
+import '../../models/usuario.dart';
 // import 'package:pdf/widgets.dart';
 
 class Deudores extends StatelessWidget {
@@ -98,7 +98,12 @@ class _TablaDeudoresState extends State<TablaDeudores> {
               }).toList(),
             );
           }
-          return const Text('No hay deudores para mostrar');
+          return Container(
+            alignment: Alignment.center,
+            child: const Text(
+              'No hay deudores para mostrar'
+              )
+              );
         } else {
           return Container(
             alignment: Alignment.center,

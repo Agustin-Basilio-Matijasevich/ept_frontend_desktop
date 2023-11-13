@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../models/usuario.dart';
-import '../services/businessdata.dart';
+import '../../models/usuario.dart';
+import '../../services/businessdata.dart';
 
 class HorariosTutor extends StatelessWidget {
   const HorariosTutor({Key? key}) : super(key: key);
