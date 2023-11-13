@@ -54,10 +54,10 @@ class GrillaHorariosState extends State<GrillaHorarios> {
                     .map((e) => DropdownMenuEntry(label: e.nombre, value: e))
                     .toList(),
               );
-            } else if (snapshot.data != null && snapshot.data!.isEmpty) {
-              return const Text('No se encontraron hijos para mostrar');
             } else if (snapshot.connectionState == ConnectionState.waiting) {
               return const CircularProgressIndicator();
+            } else if (snapshot.data != null && snapshot.data!.isEmpty) {
+              return const Text('No se encontraron hijos para mostrar');
             } else {
               return const Text('Ocurrio un error');
             }
@@ -66,7 +66,9 @@ class GrillaHorariosState extends State<GrillaHorarios> {
         FutureBuilder(
           future: servicio.getCursosPorUsuario(estudianteSeleccionado),
           builder: (context, snapshot) {
-            if (snapshot.data != null && snapshot.data!.isNotEmpty) {
+            if (estudianteSeleccionado == null) {
+              return const SizedBox();
+            } else if (snapshot.data != null && snapshot.data!.isNotEmpty) {
               return DataTable(
                 columns: const [
                   DataColumn(label: Text('Curso')),
@@ -89,10 +91,10 @@ class GrillaHorariosState extends State<GrillaHorarios> {
                     )
                     .toList(),
               );
+            } else if (snapshot.connectionState == ConnectionState.waiting) {
+              return const CircularProgressIndicator();
             } else if (snapshot.data != null && snapshot.data!.isEmpty) {
               return const Text('No se encontraron datos para mostrar');
-            } else if (snapshot.connectionState == ConnectionState.active) {
-              return const CircularProgressIndicator();
             } else {
               return const Text('Ocurrio un error');
             }
