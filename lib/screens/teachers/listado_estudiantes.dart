@@ -38,6 +38,9 @@ class TablaUsuarios extends StatefulWidget {
 class _TablaUsuariosState extends State<TablaUsuarios> {
   Curso? cursoSeleccionado;
   final servicio = BusinessData();
+  Future<List<Usuario>?> get _getUsuarios async {
+    return dataset;
+  }
 
   List<Usuario>? dataset;
 
@@ -82,149 +85,139 @@ class _TablaUsuariosState extends State<TablaUsuarios> {
         FutureBuilder(
           future: servicio.listarAlumnosPorCurso(cursoSeleccionado),
           builder: (context, snapshot) {
+            dataset = null;
             if (cursoSeleccionado == null) {
               return const SizedBox();
             } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-              dataset = snapshot.data;
-              return DataTable(
-                columns: const [
-                  DataColumn(label: Text('Nombre del usuario')),
-                  DataColumn(label: Text('Email del usuario')),
-                  DataColumn(label: Text('Foto de perfil')),
-                  DataColumn(label: Text('ID del usuario')),
-                ],
-                rows: snapshot.data!.map((e) {
-                  return DataRow(cells: [
-                    DataCell(Text(e.nombre)),
-                    DataCell(Text(e.correo)),
-                    DataCell(
-                      Center(
-                        child: (e.foto != '')
-                            ? MouseRegion(
-                                cursor: SystemMouseCursors.click,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    showDialog(
-                                      context: context,
-                                      barrierDismissible: true,
-                                      builder: (context) {
-                                        return GestureDetector(
-                                          onTap: () {
-                                            Navigator.pop(context);
-                                          },
-                                          child: Image.network(
-                                            e.foto,
-                                            width: 256,
-                                            height: 256,
-                                          ),
-                                        );
-                                      },
-                                    );
-                                  },
-                                  child: Image.network(
-                                    e.foto,
-                                    width: 32,
-                                    height: 32,
-                                  ),
-                                ),
-                              )
-                            : const Icon(Icons.person),
-                      ),
+              return SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Column(
+                  children: [
+                    DataTable(
+                      columns: const [
+                        DataColumn(label: Text('Nombre del usuario')),
+                        DataColumn(label: Text('Email del usuario')),
+                        DataColumn(label: Text('Foto de perfil')),
+                        DataColumn(label: Text('ID del usuario')),
+                      ],
+                      rows: snapshot.data!.map((e) {
+                        return DataRow(cells: [
+                          DataCell(Text(e.nombre)),
+                          DataCell(Text(e.correo)),
+                          DataCell(
+                            Center(
+                              child: (e.foto != '')
+                                  ? MouseRegion(
+                                      cursor: SystemMouseCursors.click,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          showDialog(
+                                            context: context,
+                                            barrierDismissible: true,
+                                            builder: (context) {
+                                              return GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Image.network(
+                                                  e.foto,
+                                                  width: 256,
+                                                  height: 256,
+                                                ),
+                                              );
+                                            },
+                                          );
+                                        },
+                                        child: Image.network(
+                                          e.foto,
+                                          width: 32,
+                                          height: 32,
+                                        ),
+                                      ),
+                                    )
+                                  : const Icon(Icons.person),
+                            ),
+                          ),
+                          DataCell(Text(e.uid)),
+                        ]);
+                      }).toList(),
                     ),
-                    DataCell(Text(e.uid)),
-                    
-                  ]);
-                }).toList(),
+                    TextButton(
+                      style: const ButtonStyle(
+                        backgroundColor: MaterialStatePropertyAll(Colors.blue),
+                        foregroundColor: MaterialStatePropertyAll(Colors.white),
+                        textStyle:
+                            MaterialStatePropertyAll(TextStyle(fontSize: 24)),
+                      ),
+                      onPressed: () async {
+                        bool result;
+                        try {
+                          var fileOutput = await FilePicker.platform.saveFile(
+                            allowedExtensions: ['pdf'],
+                            dialogTitle: 'Guardar listado de alumnos',
+                            type: FileType.custom,
+                          ).then(
+                            (value) async {
+                              print(value);
+                              result =
+                                  await PDFGenerator.listarAlumnosPorCursoPDF(
+                                cursoSeleccionado!,
+                                dataset!,
+                                value!,
+                              );
+                              return result;
+                            },
+                          ).then(
+                            (value) {
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  String message = '';
+                                  if (value) {
+                                    message =
+                                        'Se guardo el listado exitosamente';
+                                  } else {
+                                    message =
+                                        'Ocurrio un error guardando el pdf';
+                                  }
+                                  return AlertDialog(
+                                    title: const Text(
+                                        'Resultado guardado listado'),
+                                    content: Text(message),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text('Aceptar'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                          );
+                        } catch (ex) {
+                          print('No se guardo nada');
+                        }
+                      },
+                      child: const Text('Generar listado PDF'),
+                    ),
+                  ],
+                ),
+              );
+            } else if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(),
               );
             } else if (snapshot.hasData && snapshot.data!.isEmpty) {
               return const Text('No se encontraron alumnos para el curso');
-            } else if (snapshot.connectionState == ConnectionState.waiting) {
-              return Container(
-                alignment: Alignment.center,
-                child: const CircularProgressIndicator(),
-              );
             } else {
               return const Text('Ocurrio un error');
             }
           },
         ),
-        const SizedBox(
-          height: 30,
-        ),
-        Builder(
-          builder: (context) {
-            if (dataset != null &&
-                dataset!.isNotEmpty) {
-              return TextButton.icon(
-                style: const ButtonStyle(
-                  backgroundColor: MaterialStatePropertyAll(Colors.blue),
-                  foregroundColor: MaterialStatePropertyAll(Colors.white),
-                  textStyle: MaterialStatePropertyAll(TextStyle(fontSize: 24)),
-                ),
-                onPressed: () async {
-                  bool result;
-                  var fileOutput = await FilePicker.platform.saveFile(
-                    allowedExtensions: ['pdf'],
-                    dialogTitle: 'Guardar listado de alumnos',
-                    type: FileType.custom,
-                  ).then(
-                    (value) async {
-                      print(value);
-                      result = await PDFGenerator.listarAlumnosPorCursoPDF(
-                        cursoSeleccionado!,
-                        dataset!,
-                        value!,
-                      );
-                      return result;
-                    },
-                  ).then(
-                    (value) {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          String message = '';
-                          if (value) {
-                            message = 'Se guardo el listado exitosamente';
-                          } else {
-                            message = 'Ocurrio un error guardando el pdf';
-                          }
-                          return AlertDialog(
-                            title: const Text('Resultado guardado listado'),
-                            content: Text(message),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                child: const Text('Aceptar'),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    },
-                  );
-                },
-                label: const Text('Guardar en PDF'),
-                icon: const Icon(Icons.print),
-              );
-            } else {
-              return const SizedBox();
-            }
-          },
-        )
       ],
     );
   }
-}
-
-class Fila {
-  Usuario alumno;
-  Usuario? tutor;
-  double deuda;
-  Fila({
-    required this.alumno,
-    this.tutor,
-    required this.deuda,
-  });
 }

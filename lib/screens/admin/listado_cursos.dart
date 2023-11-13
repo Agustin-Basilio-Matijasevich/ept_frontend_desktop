@@ -29,7 +29,7 @@ class GrillaCursos extends StatefulWidget {
 
 class GrillaCursosState extends State<GrillaCursos> {
   final servicio = BusinessData();
-  String textoFiltro = '';
+  String? textoFiltro;
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -40,9 +40,15 @@ class GrillaCursosState extends State<GrillaCursos> {
         children: [
           TextField(
             onSubmitted: (value) {
-              setState(() {
-                textoFiltro = value;
-              });
+              if (value == null || value.trim() == '') {
+                setState(() {
+                  textoFiltro = null;
+                });
+              } else {
+                setState(() {
+                  textoFiltro = value;
+                });
+              }
             },
           ),
           FutureBuilder(
@@ -57,7 +63,12 @@ class GrillaCursosState extends State<GrillaCursos> {
                     DataColumn(label: Text('Hora de fin')),
                     DataColumn(label: Text('Aula')),
                   ],
-                  rows: snapshot.data!.map(
+                  rows: snapshot.data!
+                      .where(
+                    (element) => (textoFiltro == null ||
+                        element.nombre.contains(textoFiltro!)),
+                  )
+                      .map(
                     (e) {
                       return DataRow(cells: [
                         DataCell(Text(e.nombre)),

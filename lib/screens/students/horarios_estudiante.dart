@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../models/usuario.dart';
-import '../services/businessdata.dart';
+import '../../models/usuario.dart';
+import '../../services/businessdata.dart';
 
 // PARA ESTUDIANTES Y DOCENTES
 class Horarios extends StatelessWidget {

@@ -51,9 +51,21 @@ class _GrillaNotasState extends State<GrillaNotas> {
     return result;
   }
 
+  String? _validator(String? value) {
+    if (value == null || value.trim() == '') {
+      return 'Debe rellenar todos los campos';
+    } else if (int.tryParse(value) == null) {
+      return 'Todos los campos deben tener valores numericos';
+    } else {
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final usuario = Provider.of<Usuario?>(context);
+
+    final _formKey = GlobalKey<FormState>();
 
     return Column(
       children: [
@@ -82,14 +94,14 @@ class _GrillaNotasState extends State<GrillaNotas> {
                       .toList(),
                 ),
               );
+            } else if (snapshot.connectionState == ConnectionState.waiting) {
+              return const CircularProgressIndicator();
             } else if (snapshot.data != null && snapshot.data!.isEmpty) {
               return Container(
                 padding: const EdgeInsets.all(20),
                 child: const Text(
                     'No se encontraron cursos asociados al profesor'),
               );
-            } else if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator();
             } else {
               return const Text('Ocurrio un error');
             }
@@ -100,128 +112,134 @@ class _GrillaNotasState extends State<GrillaNotas> {
           builder: (context, snapshot) {
             if (cursoSeleccionado == null) {
               return const SizedBox();
+            } else if (snapshot.connectionState == ConnectionState.waiting) {
+              return const CircularProgressIndicator();
             } else if (snapshot.data != null && snapshot.data!.isNotEmpty) {
-              return Container(
-                width: MediaQuery.of(context).size.width / 2,
-                height: MediaQuery.of(context).size.height - 250,
-                alignment: Alignment.topCenter,
-                child: DataTable(
-                  columns: const [
-                    DataColumn(label: Text('Nombre')),
-                    DataColumn(label: Text('Email')),
-                    DataColumn(label: Text('Nota')),
-                  ],
-                  rows: snapshot.data!.map((e) {
-                    return DataRow(
-                      cells: [
-                        DataCell(Text(e.nombre)),
-                        DataCell(Text(e.correo)),
-                        DataCell(TextField(
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
-                            LimitRange(0, 10),
+              return Form(
+                key: _formKey,
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Container(
+                        width: MediaQuery.of(context).size.width / 2,
+                        height: MediaQuery.of(context).size.height - 250,
+                        alignment: Alignment.topCenter,
+                        child: DataTable(
+                          columns: const [
+                            DataColumn(label: Text('Nombre')),
+                            DataColumn(label: Text('Email')),
+                            DataColumn(label: Text('Nota')),
                           ],
-                          onChanged: (value) {
-                            if (notas.any(
-                                (element) => element.keys.first.uid == e.uid)) {
-                              setState(() {
-                                notas.removeWhere(
-                                  (element) => element.keys.first.uid == e.uid,
-                                );
-                                notas.add({
-                                  e: Nota(
-                                    DateTime.now(),
-                                    int.parse(value),
-                                  )
-                                });
-                              });
-                            } else {
-                              setState(() {
-                                notas.add({
-                                  e: Nota(
-                                    DateTime.now(),
-                                    int.parse(value),
-                                  )
-                                });
-                              });
+                          rows: snapshot.data!.map((e) {
+                            return DataRow(
+                              cells: [
+                                DataCell(Text(e.nombre)),
+                                DataCell(Text(e.correo)),
+                                DataCell(
+                                  TextFormField(
+                                    validator: (value) => _validator(value),
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.digitsOnly,
+                                      LimitRange(0, 10),
+                                    ],
+                                    onChanged: (value) {
+                                      if (notas.any((element) =>
+                                          element.keys.first.uid == e.uid)) {
+                                        notas.removeWhere(
+                                          (element) =>
+                                              element.keys.first.uid == e.uid,
+                                        );
+                                        notas.add({
+                                          e: Nota(
+                                            DateTime.now(),
+                                            int.parse(value),
+                                          )
+                                        });
+                                      } else {
+                                        notas.add({
+                                          e: Nota(
+                                            DateTime.now(),
+                                            int.parse(value),
+                                          )
+                                        });
+                                      }
+                                    },
+                                  ),
+                                )
+                              ],
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.all(20),
+                        alignment: Alignment.bottomCenter,
+                        child: TextButton(
+                          style: const ButtonStyle(
+                              backgroundColor:
+                                  MaterialStatePropertyAll(Colors.blue),
+                              foregroundColor:
+                                  MaterialStatePropertyAll(Colors.white),
+                              textStyle: MaterialStatePropertyAll(
+                                  TextStyle(fontSize: 24))),
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return FutureBuilder(
+                                    future: cargarListaNotas(
+                                        cursoSeleccionado!, notas),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.hasData) {
+                                        String message = '';
+                                        if (snapshot.data!) {
+                                          message =
+                                              'Exito en la carga de notas para el curso';
+                                        } else {
+                                          message =
+                                              'Ocurrio un error en la carga de notas';
+                                        }
+                                        return AlertDialog(
+                                          title: const Text(
+                                              'Resultado carga notas'),
+                                          content: Text(message),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                              child: const Text('Aceptar'),
+                                            ),
+                                          ],
+                                        );
+                                      } else {
+                                        return Container(
+                                          alignment: Alignment.center,
+                                          child:
+                                              const CircularProgressIndicator(),
+                                        );
+                                      }
+                                    },
+                                  );
+                                },
+                              );
                             }
                           },
-                        ))
-                      ],
-                    );
-                  }).toList(),
+                          child: const Text('Agregar notas'),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               );
             } else if (snapshot.data != null && snapshot.data!.isEmpty) {
               return const Text('No se encontraron datos para mostrar');
-            } else if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator();
             } else {
               return const Text('Ocurrio un error');
             }
           },
         ),
-        Builder(
-          builder: (context) {
-            if (cursoSeleccionado == null) {
-              return const SizedBox();
-            } else {
-              return Container(
-                margin: const EdgeInsets.all(20),
-                alignment: Alignment.bottomCenter,
-                child: TextButton(
-                  style: const ButtonStyle(
-                      backgroundColor: MaterialStatePropertyAll(Colors.blue),
-                      foregroundColor: MaterialStatePropertyAll(Colors.white),
-                      textStyle:
-                          MaterialStatePropertyAll(TextStyle(fontSize: 24))),
-                  onPressed: () {
-                    if (cursoSeleccionado != null && notas.isNotEmpty) {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return FutureBuilder(
-                            future: cargarListaNotas(cursoSeleccionado!, notas),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                String message = '';
-                                if (snapshot.data!) {
-                                  message =
-                                      'Exito en la carga de notas para el curso';
-                                } else {
-                                  message =
-                                      'Ocurrio un error en la carga de notas';
-                                }
-                                return AlertDialog(
-                                  title: const Text('Resultado carga notas'),
-                                  content: Text(message),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                      child: const Text('Aceptar'),
-                                    ),
-                                  ],
-                                );
-                              } else {
-                                return Container(
-                                  alignment: Alignment.center,
-                                  child: const CircularProgressIndicator(),
-                                );
-                              }
-                            },
-                          );
-                        },
-                      );
-                    }
-                  },
-                  child: const Text('Agregar notas'),
-                ),
-              );
-            }
-          },
-        )
       ],
     );
   }

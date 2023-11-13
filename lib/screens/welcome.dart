@@ -1,7 +1,7 @@
 import 'package:ept_frontend/screens/admin/asignacion_tutor.dart';
 import 'package:ept_frontend/screens/students/boletin_estudiante.dart';
 import 'package:ept_frontend/screens/parents/deuda.dart';
-import 'package:ept_frontend/screens/horarios_estudiante.dart';
+import 'package:ept_frontend/screens/students/horarios_estudiante.dart';
 import 'package:ept_frontend/screens/parents/horarios_tutor.dart';
 import 'package:ept_frontend/screens/teachers/listado_estudiantes.dart';
 // import 'package:ept_frontend/screens/pago_cuotas.dart';
